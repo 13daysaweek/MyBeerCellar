@@ -66,7 +66,7 @@ stages:
           azureResourceManagerConnection: 'AIRS'
           action: 'Create Or Update Resource Group'
           templateLocation: 'Linked artifact'
-          csmFile: '$(System.DefaultWorkingDirectory)/infrastructure/mybeerceller-api.json'
+          csmFile: '$(Build.ArtifactStagingDirectory)/infrastructure/mybeercellar-api.json'
           deploymentMode: 'Incremental'
     
 #   - job: Build

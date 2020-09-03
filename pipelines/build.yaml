@@ -4,7 +4,7 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   skipComponentGovernanceDetection: true
-  vmImageName: 'ubuntu-latest'
+  pool: 'ubuntu-latest'
 
 stages:
 - stage: Build

@@ -12,7 +12,7 @@ stages:
   jobs:
   - job: BuildInfrastructure
     displayName: Build Infrastructure
-    pool: $(pool)
+    pool: 'ubuntu-latest'
     steps:
     - task: Bash@3
       displayName: 'Install Bicep tooling'

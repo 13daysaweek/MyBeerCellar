@@ -13,7 +13,7 @@ stages:
   - job: BuildInfrastructure
     displayName: Build Infrastructure
     pool:
-      vmImage: $(pool)
+      vmImage: 'ubuntu-latest'
     steps:
     - task: Bash@3
       displayName: 'Install Bicep tooling'

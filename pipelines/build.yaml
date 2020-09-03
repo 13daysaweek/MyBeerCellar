@@ -6,6 +6,8 @@ variables:
   skipComponentGovernanceDetection: true
   pool: 'ubuntu-latest'
   artifact: 'ubuntu-latest'
+  location: 'eastus'
+  resourceGroup: 'mybeercellar'
 
 stages:
 - stage: Build
@@ -56,7 +58,8 @@ stages:
       - task: AzureResourceManagerTemplateDeployment@3
         inputs:
           deploymentScope: 'Resource Group'
-          resourceGroupName: 'mybeerceller'
+          resourceGroupName: $(resourceGroup)
+          'location': $(location)
           azureResourceManagerConnection: 'AIRS'
           action: 'Create Or Update Resource Group'
           templateLocation: 'Linked artifact'

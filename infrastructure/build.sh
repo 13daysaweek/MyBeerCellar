@@ -1,2 +1,2 @@
 #!/bin/bash
-bicep build mybeercellar-api.bicp
+bicep build mybeercellar-api.bicep

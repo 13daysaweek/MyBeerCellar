@@ -19,6 +19,11 @@ stages:
       displayName: 'Install Bicep tooling'
       inputs:
         filePath: '$(System.DefaultWorkingDirectory)/infrastructure/install.sh'
+
+    - task: Bash@3
+      displayName: 'Build ARM template from Bicep'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'        
     
 #   - job: Build
 #     displayName: Build

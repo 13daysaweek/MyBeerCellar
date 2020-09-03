@@ -5,6 +5,7 @@ variables:
   buildConfiguration: 'Release'
   skipComponentGovernanceDetection: true
   pool: 'ubuntu-latest'
+  artifact: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -36,15 +37,21 @@ stages:
       displayName: 'Publish Artifacts'
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: 'mybeercellar-api'
+        artifact: $(artifact)
         publishLocation: 'pipeline'
 
-# - stage: Release
-#   displayName: 'Release stage'
-#   jobs:
-#     - job:
-#       displayName: 'Release Infrastructure'
-#       steps:
+- stage: Release
+  displayName: 'Release stage'
+  jobs:
+    - job:
+      displayName: 'Release Infrastructure'
+      steps:
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download artifact'
+        inputs:
+          buildType: 'current'
+          artifactName: $(artifact)
+          targetPath: $(System.DefaultWorkingDirectory)
 
     
 #   - job: Build

@@ -10,6 +10,14 @@ resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   properties: {
       name: webAppName
       serverFarmId: farm.id
+      siteConfig: {
+          appSettings: [
+              {
+                  name: 'testKey'
+                  value: 'testValue-${webAppName}'
+              }
+          ]
+      }
   }
 }
 

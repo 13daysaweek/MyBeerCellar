@@ -1,1 +1,65 @@
-#comment
+trigger:
+- master
+
+variables:
+  buildConfiguration: 'Release'
+  skipComponentGovernanceDetection: true
+  pool: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: BuildInfrastructure
+    displayName: Build Infrastructure
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Bash@3
+      displayName: 'Install Bicep tooling'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/install.sh'
+    
+#   - job: Build
+#     displayName: Build
+#     pool: $(pool)
+#     steps:
+#     - script: dotnet build --configuration $(buildConfiguration)
+#       displayName: 'dotnet build $(buildConfiguration)'
+
+#     - task: DotNetCoreCLI@2
+#       displayName: 'dotnet publish'
+#       inputs:
+#         command: publish
+#         publishWebProjects: True
+#         arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+#         zipAfterPublish: True
+
+#     - task: PublishPipelineArtifact@1
+#       displayName: 'Publish artifact'
+#       inputs:
+#         targetPath: '$(Build.ArtifactStagingDirectory)'
+#         artifact: '$(artifact)'
+#         publishLocation: 'pipeline'
+
+# - stage: Release
+#   displayName: Release stage
+#   jobs:
+#   - job:
+#     displayName: Release
+#     pool: $(pool)
+#     steps:  
+#     - task: DownloadPipelineArtifact@2
+#       displayName: 'Download artifact'
+#       inputs:
+#         buildType: 'current'
+#         artifactName: '$(artifact)'
+#         targetPath: '$(System.DefaultWorkingDirectory)'
+
+#     - task: AzureRmWebAppDeployment@4
+#       inputs:
+#         ConnectionType: 'AzureRM'
+#         azureSubscription: 'AIRS'
+#         appType: 'webApp'
+#         WebAppName: 'secdeploy'
+#         packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'

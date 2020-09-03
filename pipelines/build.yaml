@@ -24,7 +24,13 @@ stages:
       displayName: 'Build ARM template from Bicep'
       inputs:
         workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/'
-        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'        
+        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates to archive directory'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/infrastructure'
+        Contents: '**/*.json'
+        TargetFolder: '$(Build.ArchiveDirectory)'
     
 #   - job: Build
 #     displayName: Build

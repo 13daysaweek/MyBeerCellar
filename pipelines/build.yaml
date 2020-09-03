@@ -30,7 +30,22 @@ stages:
       inputs:
         SourceFolder: '$(System.DefaultWorkingDirectory)/infrastructure'
         Contents: '**/*.json'
-        TargetFolder: '$(Build.ArchiveDirectory)'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
+    
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifacts'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: 'mybeercellar-api'
+        publishLocation: 'pipeline'
+
+# - stage: Release
+#   displayName: 'Release stage'
+#   jobs:
+#     - job:
+#       displayName: 'Release Infrastructure'
+#       steps:
+
     
 #   - job: Build
 #     displayName: Build

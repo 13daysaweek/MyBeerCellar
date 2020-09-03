@@ -55,7 +55,10 @@ stages:
           artifactName: $(artifact)
           targetPath: $(System.DefaultWorkingDirectory)
 
-      - script: ls -al $(System.DefaultWorkingDirectory)/infrastructure
+      - script: ls -al $(Build.ArtifactStagingDirectory)
+        displayName: 'Dir'
+
+      - script: ls -al $(Build.ArtifactStagingDirectory)/infrastructure
         displayName: 'Dir'
 
       - task: AzureResourceManagerTemplateDeployment@3

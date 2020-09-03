@@ -54,14 +54,10 @@ stages:
           buildType: 'current'
           artifactName: $(artifact)
           targetPath: $(System.DefaultWorkingDirectory)
-
-      - script: ls -al $(System.DefaultWorkingDirectory)
-        displayName: 'Dir'
-
-      - script: ls -al $(System.DefaultWorkingDirectory)/infrastructure
-        displayName: 'Dir'
-
+      
+      # Why does the artifact appear to contain the entire source tree?
       - task: AzureResourceManagerTemplateDeployment@3
+        displayName: 'Deploy ARM template'
         inputs:
           deploymentScope: 'Resource Group'
           resourceGroupName: $(resourceGroup)

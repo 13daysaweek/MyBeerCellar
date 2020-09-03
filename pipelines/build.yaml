@@ -55,10 +55,10 @@ stages:
           artifactName: $(artifact)
           targetPath: $(System.DefaultWorkingDirectory)
 
-      - script: ls -al $(Build.ArtifactStagingDirectory)
+      - script: ls -al $(System.DefaultWorkingDirectory)
         displayName: 'Dir'
 
-      - script: ls -al $(Build.ArtifactStagingDirectory)/infrastructure
+      - script: ls -al $(System.DefaultWorkingDirectory)/infrastructure
         displayName: 'Dir'
 
       - task: AzureResourceManagerTemplateDeployment@3
@@ -69,7 +69,7 @@ stages:
           azureResourceManagerConnection: 'AIRS'
           action: 'Create Or Update Resource Group'
           templateLocation: 'Linked artifact'
-          csmFile: '$(Build.ArtifactStagingDirectory)/infrastructure/mybeercellar-api.json'
+          csmFile: $(System.DefaultWorkingDirectory)/infrastructure/mybeercellar-api.json
           deploymentMode: 'Incremental'
     
 #   - job: Build

@@ -23,7 +23,7 @@ stages:
     - task: Bash@3
       displayName: 'Build ARM template from Bicep'
       inputs:
-       workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/'
         filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'        
     
 #   - job: Build

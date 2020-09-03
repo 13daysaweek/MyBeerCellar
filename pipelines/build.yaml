@@ -53,6 +53,15 @@ stages:
           artifactName: $(artifact)
           targetPath: $(System.DefaultWorkingDirectory)
 
+      - task: AzureResourceManagerTemplateDeployment@3
+        inputs:
+          deploymentScope: 'Resource Group'
+          resourceGroupName: 'mybeerceller'
+          azureResourceManagerConnection: 'AIRS'
+          action: 'Create Or Update Resource Group'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(System.DefaultWorkingDirectory)/infrastructure/mybeerceller-api.json'
+          deploymentMode: 'Incremental'
     
 #   - job: Build
 #     displayName: Build

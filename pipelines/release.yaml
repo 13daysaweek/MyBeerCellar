@@ -5,9 +5,9 @@ resources:
   pipelines:
   - pipeline: build   # Name of the pipeline resource
     source: MyBeerCellar.API - Build # Name of the pipeline referenced by the pipeline resource
-    trigger: 
-      branches:
-      - master
+    # trigger: 
+    #   branches:
+    #   - master
 
 stages:
 - stage: ReleaseDev

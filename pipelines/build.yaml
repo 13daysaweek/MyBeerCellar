@@ -35,6 +35,13 @@ stages:
         Contents: '**/*.json'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
     
+    - task: Bash@3
+      inputs:
+        targetType: inline
+        script: |
+          ls -al $(Build.ArtifactStagingDirectory)/
+          ls -al $(Build.ArtifactStagingDirectory)/infrastructure/
+
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifacts'
       inputs:

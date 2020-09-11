@@ -21,4 +21,4 @@ stages:
           displayName: 'Test1'
           inputs:
              targetType: inline
-             script: 'ls -al $(Pipeline.Workspace)/b'
+             script: 'ls -al $(Pipeline.Workspace)/a'

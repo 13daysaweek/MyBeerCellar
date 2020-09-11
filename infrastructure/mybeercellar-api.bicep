@@ -1,8 +1,11 @@
 param location string = resourceGroup().location
-param webAppName string = 'mybeercellarapi'
-param keyVaultName string = 'mybrewcellar-vault'
+param webAppName string
+param keyVaultName string
 param tenantId string
 param ownerObjectId string
+param sqlServerName string
+param sqlAdminLogin string
+param sqlAdminPassword string
 
 var farmName = '${webAppName}-farm'
 
@@ -60,6 +63,18 @@ resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
                 }
             }
         ]
+    }
+}
+
+resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
+    name: sqlServerName
+    location: location
+    kind: 'v12.0'
+    properties: {
+        administratorLogin: sqlAdminLogin
+        administratorLoginPassword: sqlAdminPassword
+        version: '12.0'
+        publicNetworkAccess: 'Enabled'
     }
 }
 

@@ -1,8 +1,13 @@
 param location string = resourceGroup().location
 param webAppName string = 'mybeercellarapi'
+param keyVaultName string = 'mybrewcellar-vault'
 
 var websiteName = '${webAppName}-site'
 var farmName = '${webAppName}-farm'
+
+resource keyVault 'Microsoft.KeyVault/vaults' = {
+    
+}
 
 resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   name: webAppName

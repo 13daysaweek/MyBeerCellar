@@ -1,3 +1,5 @@
+trigger: none
+
 resources:
   pipelines:
   - pipeline: build   # Name of the pipeline resource
@@ -16,6 +18,7 @@ stages:
    displayName: 'Dev Release Stage'
    variables:
      resource-group: 'mybeercellar'
+     appName: 'mybeercellar-api-dev'
    jobs:
    - deployment: 'Deploy'
      environment: 'Development'
@@ -25,11 +28,6 @@ stages:
       runOnce:
         deploy:
          steps:
-           - task: Bash@3
-             displayName: 'Test1111'
-             inputs:
-               targetType: inline
-               script: ls -al $(Pipeline.Workspace)/build/Infrastructure
            - task: AzureResourceGroupDeployment@2
              displayName: 'Deploy Infrastructure'
              inputs:
@@ -37,10 +35,12 @@ stages:
                 csmFile: $(infrastructure-arm-template)
                 resourceGroupName: $(resource-group)
                 location: $(location)
+                overrideParameters: '-webAppName $(appName)'
  - stage: Production
    displayName: 'Production Release Stage'
    variables:
      resource-group: 'my-beer-cellar-prod'
+     appName: 'mybeercellar-api-prod'     
    jobs:
    - deployment: 'Deploy'
      environment: 'Production'
@@ -57,3 +57,4 @@ stages:
                csmFile: $(infrastructure-arm-template)
                resourceGroupName: $(resource-group)
                location: $(location)
+               overrideParameters: '-webAppName $(appName)'

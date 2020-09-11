@@ -1,3 +1,8 @@
+trigger:
+  branches:
+    include:
+    - master
+
 resources:
   pipelines:
   - pipeline: build   # Name of the pipeline resource

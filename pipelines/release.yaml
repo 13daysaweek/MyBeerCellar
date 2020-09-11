@@ -29,7 +29,7 @@ stages:
              displayName: 'Test1111'
              inputs:
                targetType: inline
-               script: ls -al $(Pipeline.Workspace)/build/
+               script: ls -al $(Pipeline.Workspace)/build/Infrastructure
 
 # stages:
 # - stage: ReleaseDev

@@ -2,6 +2,7 @@ param location string = resourceGroup().location
 param webAppName string = 'mybeercellarapi'
 param keyVaultName string = 'mybrewcellar-vault'
 param tenantId string
+param ownerObjectId string
 
 var farmName = '${webAppName}-farm'
 
@@ -14,6 +15,51 @@ resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
             name: 'Standard'
         }
         tenantId: tenantId
+        accessPolicies: [
+            {
+                tenantId: tenantId
+                objectId: ownerObjectId
+                permissions: {
+                    keys: [
+                        'Get'
+                        'List'
+                        'Update'
+                        'Create'
+                        'Import'
+                        'Delete'
+                        'Recover'
+                        'Backup'
+                        'Restore'
+                    ]
+                    secrets: [
+                        'Get'
+                        'List'
+                        'Set'
+                        'Delete'
+                        'Recover'
+                        'Backup'
+                        'Restore'
+                    ]
+                    certificates: [
+                        'Get'
+                        'List'
+                        'Update'
+                        'Create'
+                        'Import'
+                        'Delete'
+                        'Recover'
+                        'Backup'
+                        'Restore'
+                        'ManageContacts'
+                        'ManageIssuers'
+                        'GetIssuers'
+                        'ListIssuers'
+                        'SetIssuers'
+                        'DeleteIssuers'
+                    ]
+                }
+            }
+        ]
     }
 }
 

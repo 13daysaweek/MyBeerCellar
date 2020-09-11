@@ -7,6 +7,7 @@ variables:
   pool: 'ubuntu-latest'
   azure-sub-dev: 'AIRS'
   azure-sub-prod: 'MSDN'
+  location: 'eastus'
   infrastructure-arm-template: '$(Pipeline.Workspace)/build/Infrastructure/mybeercellar-api.json'
 
 stages:
@@ -34,6 +35,7 @@ stages:
                 azureResourceManagerConnection: $(azure-sub-dev)
                 csmFile: $(infrastructure-arm-template)
                 resourceGroupName: $(resource-group)
+                location: $(location)
 
 # stages:
 # - stage: ReleaseDev

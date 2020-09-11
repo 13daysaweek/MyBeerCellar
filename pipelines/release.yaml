@@ -14,16 +14,34 @@ variables:
   azure-sub-prod: 'MSDN'
 
 stages:
-- stage: ReleaseDev
-  displayName: 'Release Dev'
-  jobs:
-    - job: Release
-      displayName: 'Release'
-      pool:
-        vmImage: $(pool)
-      steps:
-        - task: Bash@3
-          displayName: 'Test11'
-          inputs:
-             targetType: inline
-             script: 'ls -al $(Pipeline.Workspace)/'
+ - stage: Dev
+   displayName: 'Dev Release Stage'
+   jobs:
+   - deployment: 'Deploy'
+     environment: 'Dev'
+     pool:
+       vmImage: $(pool)
+     strategy:
+      runOnce:
+        deploy:
+         steps:
+           - task: Bash@3
+             displayName: 'Test111'
+             inputs:
+               targetType: inline
+               script: ls -al $(Pipeline.Workspace)/
+
+# stages:
+# - stage: ReleaseDev
+#   displayName: 'Release Dev'
+#   jobs:
+#     - job: Release
+#       displayName: 'Release'
+#       pool:
+#         vmImage: $(pool)
+#       steps:
+#         - task: Bash@3
+#           displayName: 'Test11'
+#           inputs:
+#              targetType: inline
+#              script: 'ls -al $(Pipeline.Workspace)/'

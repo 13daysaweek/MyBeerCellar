@@ -18,8 +18,13 @@ stages:
  - stage: Development
    displayName: 'Dev Release Stage'
    variables:
-     resource-group: 'mybeercellar'
-     appName: 'mybeercellar-api-dev'
+   - group: 'Development Variables'
+   - name: 'resource-group'
+     value: 'mybeercellar'
+   - name: 'appName'
+     value: 'mybeercellar-api-dev'
+   - name: 'keyVaultName'
+     value: 'mybrewcellar-vault-dev'
    jobs:
    - deployment: 'Deploy'
      environment: 'Development'
@@ -36,12 +41,17 @@ stages:
                 csmFile: $(infrastructure-arm-template)
                 resourceGroupName: $(resource-group)
                 location: $(location)
-                overrideParameters: '-webAppName $(appName)'
+                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName'
  - stage: Production
    displayName: 'Production Release Stage'
    variables:
-     resource-group: 'my-beer-cellar-prod'
-     appName: 'mybeercellar-api-prod'     
+   - group: 'Production Variables'
+   - name: 'resource-group'
+     value: 'my-beer-cellar-prod'
+   - name: 'appName'
+     value: 'mybrewcellar-api-prod'
+   - name: 'keyVaultName'
+     value: 'mybrewcellar-vault-prod'     
    jobs:
    - deployment: 'Deploy'
      environment: 'Production'
@@ -58,4 +68,4 @@ stages:
                csmFile: $(infrastructure-arm-template)
                resourceGroupName: $(resource-group)
                location: $(location)
-               overrideParameters: '-webAppName $(appName)'
+               overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName'

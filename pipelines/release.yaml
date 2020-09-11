@@ -7,13 +7,16 @@ variables:
   pool: 'ubuntu-latest'
   azure-sub-dev: 'AIRS'
   azure-sub-prod: 'MSDN'
+  infrastructure-arm-template: '$(Pipeline.Workspace)/build/Infrastructure/mybeercellar-api.json'
 
 stages:
- - stage: Dev
+ - stage: Development
    displayName: 'Dev Release Stage'
+   variables:
+     resource-group: 'mybeercellar'
    jobs:
    - deployment: 'Deploy'
-     environment: 'Dev'
+     environment: 'Development'
      pool:
        vmImage: $(pool)
      strategy:
@@ -25,6 +28,12 @@ stages:
              inputs:
                targetType: inline
                script: ls -al $(Pipeline.Workspace)/build/Infrastructure
+           - task: AzureResourceManagerTemplateDeployment@3
+             displayName: 'Deploy Infrastructure'
+             inputs:
+                azureResourceManagerConnection: $(azure-sub-dev)
+                csmFile: $(infrastructure-arm-template)
+                resourceGroupName: $(resource-group)
 
 # stages:
 # - stage: ReleaseDev

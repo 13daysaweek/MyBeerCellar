@@ -18,7 +18,7 @@ stages:
         vmImage: $(pool)
       steps:
         - task: Bash@3
-          displayName: 'Test1'
+          displayName: 'Test11'
           inputs:
              targetType: inline
-             script: 'ls -al $(Pipeline.Workspace)/a'
+             script: 'ls -al $(Pipeline.Workspace)/'

@@ -35,12 +35,12 @@ stages:
         Contents: '**/*.json'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
     
-    - task: Bash@3
-      inputs:
-        targetType: inline
-        script: |
-          ls -al $(Build.ArtifactStagingDirectory)/
-          ls -al $(Build.ArtifactStagingDirectory)/infrastructure/
+    # - task: Bash@3
+    #   inputs:
+    #     targetType: inline
+    #     script: |
+    #       ls -al $(Build.ArtifactStagingDirectory)/
+    #       ls -al $(Build.ArtifactStagingDirectory)/infrastructure/
 
     # - task: PublishPipelineArtifact@1
     #   displayName: 'Publish Artifacts'
@@ -55,31 +55,31 @@ stages:
         PathtoPublish: $(Build.ArtifactStagingDirectory)/infrastructure/
         ArtifactName: 'Infrastructure'
 
-- stage: Release
-  displayName: 'Release stage'
-  jobs:
-    - job:
-      displayName: 'Release Infrastructure'
-      steps:
-      - task: DownloadPipelineArtifact@2
-        displayName: 'Download artifact'
-        inputs:
-          buildType: 'current'
-          artifactName: $(artifact)
-          targetPath: $(System.DefaultWorkingDirectory)
+# - stage: Release
+#   displayName: 'Release stage'
+#   jobs:
+#     - job:
+#       displayName: 'Release Infrastructure'
+#       steps:
+#       - task: DownloadPipelineArtifact@2
+#         displayName: 'Download artifact'
+#         inputs:
+#           buildType: 'current'
+#           artifactName: $(artifact)
+#           targetPath: $(System.DefaultWorkingDirectory)
       
-      # Why does the artifact appear to contain the entire source tree?
-      - task: AzureResourceManagerTemplateDeployment@3
-        displayName: 'Deploy ARM template'
-        inputs:
-          deploymentScope: 'Resource Group'
-          resourceGroupName: $(resourceGroup)
-          'location': $(location)
-          azureResourceManagerConnection: 'AIRS'
-          action: 'Create Or Update Resource Group'
-          templateLocation: 'Linked artifact'
-          csmFile: $(System.DefaultWorkingDirectory)/infrastructure/mybeercellar-api.json
-          deploymentMode: 'Incremental'
+#       # Why does the artifact appear to contain the entire source tree?
+#       - task: AzureResourceManagerTemplateDeployment@3
+#         displayName: 'Deploy ARM template'
+#         inputs:
+#           deploymentScope: 'Resource Group'
+#           resourceGroupName: $(resourceGroup)
+#           'location': $(location)
+#           azureResourceManagerConnection: 'AIRS'
+#           action: 'Create Or Update Resource Group'
+#           templateLocation: 'Linked artifact'
+#           csmFile: $(System.DefaultWorkingDirectory)/infrastructure/mybeercellar-api.json
+#           deploymentMode: 'Incremental'
     
 #   - job: Build
 #     displayName: Build

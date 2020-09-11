@@ -41,7 +41,7 @@ stages:
                 csmFile: $(infrastructure-arm-template)
                 resourceGroupName: $(resource-group)
                 location: $(location)
-                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName)'
+                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId)'
  - stage: Production
    displayName: 'Production Release Stage'
    variables:

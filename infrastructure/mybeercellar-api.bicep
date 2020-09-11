@@ -3,11 +3,13 @@ param webAppName string
 param keyVaultName string
 param tenantId string
 param ownerObjectId string
-param sqlServerName string
+param sqlServerName string = 'mybrewcellersqlsrv'
 param sqlAdminLogin string
 param sqlAdminPassword string
+param environmentSuffix string
 
 var farmName = '${webAppName}-farm'
+var sqlServerFullName = '${sqlServerName}-${environmentSuffix}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
     name: keyVaultName
@@ -67,7 +69,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
-    name: sqlServerName
+    name: sqlServerFullName
     location: location
     kind: 'v12.0'
     properties: {

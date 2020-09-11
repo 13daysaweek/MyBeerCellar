@@ -25,6 +25,8 @@ stages:
      value: 'mybeercellar-api-dev'
    - name: 'keyVaultName'
      value: 'mybrewcellar-vault-dev'
+   - name: 'environmentSuffix'
+     value: 'dev'
    jobs:
    - deployment: 'Deploy'
      environment: 'Development'
@@ -41,7 +43,7 @@ stages:
                 csmFile: $(infrastructure-arm-template)
                 resourceGroupName: $(resource-group)
                 location: $(location)
-                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword)'
+                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
  - stage: Production
    displayName: 'Production Release Stage'
    variables:
@@ -51,7 +53,9 @@ stages:
    - name: 'appName'
      value: 'mybrewcellar-api-prod'
    - name: 'keyVaultName'
-     value: 'mybrewcellar-vault-prod'     
+     value: 'mybrewcellar-vault-prod'
+   - name: 'environmentSuffix'
+     value: 'prod'     
    jobs:
    - deployment: 'Deploy'
      environment: 'Production'
@@ -68,4 +72,4 @@ stages:
                csmFile: $(infrastructure-arm-template)
                resourceGroupName: $(resource-group)
                location: $(location)
-               overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword)'
+               overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'

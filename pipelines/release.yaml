@@ -26,10 +26,10 @@ stages:
         deploy:
          steps:
            - task: Bash@3
-             displayName: 'Test111'
+             displayName: 'Test1111'
              inputs:
                targetType: inline
-               script: ls -al $(Pipeline.Workspace)/
+               script: ls -al $(Pipeline.Workspace)/build/
 
 # stages:
 # - stage: ReleaseDev

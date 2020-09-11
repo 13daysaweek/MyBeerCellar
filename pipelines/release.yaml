@@ -1,13 +1,14 @@
-variables:
-  pool: 'ubuntu-latest'
+trigger: none
 
 resources:
   pipelines:
   - pipeline: build   # Name of the pipeline resource
     source: MyBeerCellar.API - Build # Name of the pipeline referenced by the pipeline resource
-    # trigger: 
-    #   branches:
-    #   - master
+
+variables:
+  pool: 'ubuntu-latest'
+  azure-sub-dev: 'AIRS'
+  azure-sub-prod: 'MSDN'
 
 stages:
 - stage: ReleaseDev
@@ -22,4 +23,4 @@ stages:
           displayName: 'Test'
           inputs:
              targetType: inline
-             script: 'ls -al .'
+             script: 'ls -al $(Pipeline.Workspace)/'

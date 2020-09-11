@@ -42,12 +42,18 @@ stages:
           ls -al $(Build.ArtifactStagingDirectory)/
           ls -al $(Build.ArtifactStagingDirectory)/infrastructure/
 
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifacts'
+    # - task: PublishPipelineArtifact@1
+    #   displayName: 'Publish Artifacts'
+    #   inputs:
+    #     targetPath: '$(Build.ArtifactStagingDirectory)'
+    #     artifact: $(artifact)
+    #     publishLocation: 'pipeline'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Arficats'
       inputs:
-        targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifact: $(artifact)
-        publishLocation: 'pipeline'
+        PathtoPublish: $(Build.ArtifactStagingDirectory)/infrastructure/
+        ArtifactName: 'Infrastructure'
 
 - stage: Release
   displayName: 'Release stage'

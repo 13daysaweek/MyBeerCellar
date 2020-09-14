@@ -103,7 +103,7 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2019-06-01-preview' = {
 }
 
 resource tde 'Microsoft.Sql/servers/databases/transparentDatEncryption@2014-04-01-preview' = {
-    name: '${sqlServer.name}/${sqlDb.name}/current'
+    name: '${sqlDb.name}/current'
     properties: {
         status: 'Enabled'
     }

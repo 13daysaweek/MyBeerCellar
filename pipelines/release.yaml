@@ -44,6 +44,17 @@ stages:
                 resourceGroupName: $(resource-group)
                 location: $(location)
                 overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+
+           - task: AzureRmWebAppDeployment@4
+             displayName: 'Deploy API code'
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'AIRS'
+               appType: 'webAppLinux'
+               WebAppName: 'mybeercellar-api-dev'
+               packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+               RuntimeStack: 'DOTNETCORE|3.1'
+
  - stage: Production
    displayName: 'Production Release Stage'
    variables:
@@ -73,3 +84,14 @@ stages:
                resourceGroupName: $(resource-group)
                location: $(location)
                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+
+           - task: AzureRmWebAppDeployment@4
+             displayName: 'Deploy API code'
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'AIRS'
+               appType: 'webAppLinux'
+               WebAppName: 'mybeercellar-api-dev'
+               packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+               RuntimeStack: 'DOTNETCORE|3.1'
+

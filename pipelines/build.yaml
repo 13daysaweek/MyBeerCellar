@@ -60,12 +60,12 @@ stages:
         publishWebProjects: true
         zipAfterPublish: true
         projects: '**/*.csproj'
-        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory/code/'
+        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/code/'
     
     - task: PublishBuildArtifacts@1
       displayName: 'Publish code artifact'
       inputs:
-        PathtoPublish: $(Build.ArtifactStagingDirectory)/code/
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/code/'
         ArtifactName: 'Code'
 
 # - stage: Release

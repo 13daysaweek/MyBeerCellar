@@ -34,26 +34,38 @@ stages:
         SourceFolder: '$(System.DefaultWorkingDirectory)/infrastructure'
         Contents: '**/*.json'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
-    
-    # - task: Bash@3
-    #   inputs:
-    #     targetType: inline
-    #     script: |
-    #       ls -al $(Build.ArtifactStagingDirectory)/
-    #       ls -al $(Build.ArtifactStagingDirectory)/infrastructure/
-
-    # - task: PublishPipelineArtifact@1
-    #   displayName: 'Publish Artifacts'
-    #   inputs:
-    #     targetPath: '$(Build.ArtifactStagingDirectory)'
-    #     artifact: $(artifact)
-    #     publishLocation: 'pipeline'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Arficats'
+      displayName: 'Publish infrastructure artifact'
       inputs:
         PathtoPublish: $(Build.ArtifactStagingDirectory)/infrastructure/
         ArtifactName: 'Infrastructure'
+  
+  - job: BuildCode
+    displayName: 'Build API Code'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: build
+        projects: '$(System.DefaultWorkingDirectory)/MyBeerCellar.API.sln'
+        arguments: '-- configuration Release'
+      
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: publish
+        publishWebProjects: true
+        zipAfterPublish: true
+        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory/code/'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish code artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/code/*.zip'
+        ArtifactName: 'Code'
 
 # - stage: Release
 #   displayName: 'Release stage'

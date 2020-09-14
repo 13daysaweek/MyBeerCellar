@@ -36,15 +36,6 @@ stages:
       runOnce:
         deploy:
          steps:
-           - task: Bash@3
-             displayName: 'ws dir'
-             inputs:
-               script: 'ls -al $(Pipeline.Workspace)/'
-
-           - task: Bash@3
-             displayName: 'build dir'
-             inputs:
-               script: 'ls -al $(Pipeline.Workspace)/build/'
            - task: AzureResourceGroupDeployment@2
              displayName: 'Deploy Infrastructure'
              inputs:
@@ -54,16 +45,6 @@ stages:
                 location: $(location)
                 overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
 
-           - task: Bash@3
-             displayName: 'build dir'
-             inputs:
-               script: 'ls -al $(Pipeline.Workspace)/build/'
-
-           - task: Bash@3
-             displayName: 'build code'
-             inputs:
-               script: 'ls -al $(Pipeline.Workspace)/build/code'
-
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
              inputs:
@@ -71,7 +52,7 @@ stages:
                azureSubscription: 'AIRS'
                appType: 'webAppLinux'
                WebAppName: 'mybeercellar-api-dev'
-               packageForLinux: '$(Pipeline.Workspace)/build/code/*.zip'
+               packageForLinux: $(Pipeline.Workspace)/build/Code/*.zip
                RuntimeStack: 'DOTNETCORE|3.1'
 
  - stage: Production

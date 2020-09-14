@@ -45,6 +45,16 @@ stages:
                 location: $(location)
                 overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
 
+           - task: Bash@3
+             displayName: 'build dir'
+             inputs:
+               script: 'ls -al $(Pipeline.Workspace)/build/'
+
+           - task: Bash@3
+             displayName: 'build code'
+             inputs:
+               script: 'ls -al $(Pipeline.Workspace)/build/code'
+
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
              inputs:

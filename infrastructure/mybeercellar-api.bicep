@@ -86,15 +86,13 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2019-06-01-preview' = {
     name: '${sqlServer.name}/${sqlDbName}'
     location: location
     sku: {
-        name: 'GP_Gen5'
-        tier: 'GeneralPurpose'
-        family: 'Gen5'
-        'capacity': 2
+        name: 'Standard'
+        tier: 'Standard'
+        capacity: 50
     }
-    kind: 'v12.0,user,vcore'
+    kind: 'v12.0,user'
     properties: {
         collation: 'SQL_Latin1_General_CP1_CI_AS'
-        //maxSizeBytes: 343597383
         catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
         zoneRedundant: false
         licenseType: 'LicenseIncluded'
@@ -105,7 +103,7 @@ resource sqlDb 'Microsoft.Sql/servers/databases@2019-06-01-preview' = {
 }
 
 resource tde 'Microsoft.Sql/servers/databases/transparentDatEncryption@2014-04-01-preview' = {
-    name: '${sqlDb.name}/current'
+    name: '${sqlServer.name}/${sqlDb.name}/current'
     properties: {
         status: 'Enabled'
     }

@@ -170,3 +170,6 @@ resource appInsights 'microsoft.insights/components@2018-05-01-preview' = {
         publicNetworkAccessForQuery: 'Enabled'
     }
 }
+
+output appConfigResourceName string = appConfig.name
+output resourceGroupName string = resourceGroup().name

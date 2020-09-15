@@ -44,6 +44,7 @@ stages:
                 resourceGroupName: $(resource-group)
                 location: $(location)
                 overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+                deploymentOutputs: 'armOutput'
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
@@ -85,6 +86,7 @@ stages:
                resourceGroupName: $(resource-group)
                location: $(location)
                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+               deploymentOutputs: 'armOutput'               
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'

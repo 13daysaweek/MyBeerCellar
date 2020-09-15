@@ -134,7 +134,7 @@ resource webApp 'Microsoft.Web/sites@2018-11-01' = {
           connectionStrings: [
             {
                 name: 'AppConfig'
-                connectionString: appConfig.properties.connectionString
+                connectionString: appConfig.properties.endpoint
             }
           ]
       }

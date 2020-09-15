@@ -12,6 +12,7 @@ param environmentSuffix string
 
 var farmName = '${webAppName}-farm'
 var sqlServerFullName = '${sqlServerName}-${environmentSuffix}'
+var appInsightsName = '${webAppName}-insights'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
     name: keyVaultName
@@ -136,5 +137,18 @@ resource farm 'Microsoft.Web/serverFarms@2018-11-01' = {
         workerSizeId: '0'
         numberOfWorkers: '1'
         reserved: true
+    }
+}
+
+resource appInsights 'microsoft.insights/components@2018-05-01-preview' = {
+    name: appInsightsName
+    location: location
+    kind: 'web'
+    properties: {
+        Application_Type: 'web'
+        Request_Source: 'rest'
+        RetentionInDays: 90
+        publicNetworkAccessForIngestion: 'Enabled'
+        publicNetworkAccessForQuery: 'Enabled'
     }
 }

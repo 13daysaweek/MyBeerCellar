@@ -72,6 +72,17 @@ resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
     }
 }
 
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2020-06-01' = {
+    name: appConfigName
+    location: location
+    sku: {
+        name: 'free'
+    }
+    properties: {
+        encryption: {}
+    }
+}
+
 resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
     name: sqlServerFullName
     location: location
@@ -120,6 +131,12 @@ resource webApp 'Microsoft.Web/sites@2018-11-01' = {
       siteConfig: {
           appSettings: [
           ]
+          connectionStrings: [
+            {
+                name: 'AppConfig'
+                connectionString: appConfig.properties.connectionString
+            }
+          ]
       }
   }
 }
@@ -151,16 +168,5 @@ resource appInsights 'microsoft.insights/components@2018-05-01-preview' = {
         RetentionInDays: 90
         publicNetworkAccessForIngestion: 'Enabled'
         publicNetworkAccessForQuery: 'Enabled'
-    }
-}
-
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2020-06-01' = {
-    name: appConfigName
-    location: location
-    sku: {
-        name: 'free'
-    }
-    properties: {
-        encryption: {}
     }
 }

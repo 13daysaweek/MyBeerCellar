@@ -92,6 +92,6 @@ stages:
                azureSubscription: 'AIRS'
                appType: 'webAppLinux'
                WebAppName: 'mybeercellar-api-dev'
-               packageForLinux: '$(Pipeline.Workspace)/build/code/*.zip'
+               packageForLinux: '$(Pipeline.Workspace)/build/Code/*.zip'
                RuntimeStack: 'DOTNETCORE|3.1'
 

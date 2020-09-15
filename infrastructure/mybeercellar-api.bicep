@@ -13,6 +13,7 @@ param environmentSuffix string
 var farmName = '${webAppName}-farm'
 var sqlServerFullName = '${sqlServerName}-${environmentSuffix}'
 var appInsightsName = '${webAppName}-insights'
+var appConfigName = 'mybeercellar-config-${environmentSuffix}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
     name: keyVaultName
@@ -150,5 +151,16 @@ resource appInsights 'microsoft.insights/components@2018-05-01-preview' = {
         RetentionInDays: 90
         publicNetworkAccessForIngestion: 'Enabled'
         publicNetworkAccessForQuery: 'Enabled'
+    }
+}
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2020-06-01' = {
+    name: appConfigName
+    location: location
+    sku: {
+        name: 'free'
+    }
+    properties: {
+        encryption: {}
     }
 }

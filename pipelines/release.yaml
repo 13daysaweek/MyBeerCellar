@@ -46,6 +46,16 @@ stages:
                 overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
                 deploymentOutputs: 'armOutput'
 
+           - task: AzureCLI@2
+             displayName: 'Set App Config connection string on API app'
+             inputs:
+               azureSubscription: 'AIRS'
+               scriptType: 'bash'
+               scriptLocation: 'inlineScript'
+               inlineScript: |
+                 connectionString = $(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
+                 az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings mysql1=$connectionString
+
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
              inputs:

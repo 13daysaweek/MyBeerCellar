@@ -53,8 +53,8 @@ stages:
                scriptType: 'bash'
                scriptLocation: 'inlineScript'
                inlineScript: |
-                 connectionString = $(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
-                 az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings mysql1=$connectionString
+                 connectionString=$(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
+                 az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings AppConfig=$connectionString
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'

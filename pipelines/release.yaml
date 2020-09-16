@@ -98,6 +98,16 @@ stages:
                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
                deploymentOutputs: 'armOutput'               
 
+           - task: AzureCLI@2
+             displayName: 'Set App Config connection string on API app'
+             inputs:
+               azureSubscription: 'MSDN'
+               scriptType: 'bash'
+               scriptLocation: 'inlineScript'
+               inlineScript: |
+                 connectionString=$(az appconfig credential list -n mybeercellar-config-prod -g my-beer-cellar-prod --query [0].connectionString -o tsv)
+                 az webapp config connection-string set -g my-beer-cellar-prod -n mybrewcellar-api-prod -t custom --settings AppConfig=$connectionString
+
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
              inputs:

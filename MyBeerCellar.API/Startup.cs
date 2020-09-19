@@ -1,9 +1,12 @@
 using System;
+using System.Reflection.Metadata;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyBeerCellar.API.Data;
 
 namespace MyBeerCellar.API
 {
@@ -24,6 +27,8 @@ namespace MyBeerCellar.API
 
             var appInsightsKey = Configuration[Constants.ConfigurationKeys.AppInsightsInstrumentationKeyKey];
             services.AddApplicationInsightsTelemetry(appInsightsKey);
+
+            services.AddDbContext<MyBeerCellarContext>(_ => _.UseSqlServer(Configuration[Constants.ConfigurationKeys.MyBeerCellarDbConnectionString]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

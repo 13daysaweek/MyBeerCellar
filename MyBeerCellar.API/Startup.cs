@@ -21,6 +21,9 @@ namespace MyBeerCellar.API
         {
             services.AddControllers();
             services.AddSwaggerGen();
+
+            var appInsightsKey = Configuration[Constants.ConfigurationKeys.AppInsightsInstrumentationKeyKey];
+            services.AddApplicationInsightsTelemetry(appInsightsKey);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

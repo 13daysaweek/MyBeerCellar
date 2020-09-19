@@ -129,11 +129,12 @@ stages:
                packageForLinux: '$(Pipeline.Workspace)/build/Code/*.zip'
                RuntimeStack: 'DOTNETCORE|3.1'
                StartupCommand: 'dotnet MyBeerCellar.API.dll'
+               TakeAppOfflineFlag: true
 
            - task: AzureCLI@2
              displayName: 'Add App Config entries'
              inputs:
-              azureSubscription: 'AIRS'
+              azureSubscription: 'MSDN'
               scriptType: bash
               scriptLocation: 'inlineScript'
               inlineScript: |

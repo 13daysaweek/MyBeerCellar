@@ -76,7 +76,7 @@ stages:
               inlineScript: |
                 az extension add -n application-insights
                 instrumentationKey=$(az monitor app-insights component show -o tsv --app mybeercellar-api-dev-insights -g mybeercellar --query instrumentationKey)
-                az appconfig kv set -n mybeercellar-config-dev --key ApplicationInsights:InstrumentationKey --value $instrumentationKey
+                az appconfig kv set -n mybeercellar-config-dev --key ApplicationInsights:InstrumentationKey --value $instrumentationKey --yes
 
  - stage: Production
    displayName: 'Production Release Stage'
@@ -139,5 +139,5 @@ stages:
               inlineScript: |
                 az extension add -n application-insights
                 instrumentationKey=$(az monitor app-insights component show -o tsv -app mybrewcellar-api-prod-insights -g my-beer-cellar-prod --query instrumentationKey)
-                az appconfig kv set -n mybeercellar-config-prod --key ApplicationInsights:InstrumentationKey --value $instrumentationKey
+                az appconfig kv set -n mybeercellar-config-prod --key ApplicationInsights:InstrumentationKey --value $instrumentationKey --yes
 

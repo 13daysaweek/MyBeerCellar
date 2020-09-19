@@ -67,6 +67,17 @@ stages:
                RuntimeStack: 'DOTNETCORE|3.1'
                StartupCommand: 'dotnet MyBeerCellar.API.dll'
 
+           - task: AzureCLI@2
+             displayName: 'Add App Config entries'
+             inputs:
+              azureSubscription: 'AIRS'
+              scriptType: bash
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az extension add -n application-insights
+                instrumentationKey=$(az monitor app-insights component show -o tsv -n mybeercellar-api-dev-insights -g mybeercellar --query [].instrumentationKey)
+                az appconfig kv set -n mybeercellar-config-dev --key ApplicationInsights:InstrumentationKey --value $instrumentationKey
+
  - stage: Production
    displayName: 'Production Release Stage'
    variables:
@@ -118,4 +129,15 @@ stages:
                packageForLinux: '$(Pipeline.Workspace)/build/Code/*.zip'
                RuntimeStack: 'DOTNETCORE|3.1'
                StartupCommand: 'dotnet MyBeerCellar.API.dll'
+
+           - task: AzureCLI@2
+             displayName: 'Add App Config entries'
+             inputs:
+              azureSubscription: 'AIRS'
+              scriptType: bash
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az extension add -n application-insights
+                instrumentationKey=$(az monitor app-insights component show -o tsv -n mybrewcellar-api-prod-insights -g my-beer-cellar-prod --query [].instrumentationKey)
+                az appconfig kv set -n mybeercellar-config-prod --key ApplicationInsights:InstrumentationKey --value $instrumentationKey
 

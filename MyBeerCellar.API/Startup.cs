@@ -1,5 +1,4 @@
-using System;
-using System.Reflection.Metadata;
+using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +16,8 @@ namespace MyBeerCellar.API
             Configuration = configuration;
         }
 
+        private ILifetimeScope Container { get; set; }
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -28,7 +29,9 @@ namespace MyBeerCellar.API
             var appInsightsKey = Configuration[Constants.ConfigurationKeys.AppInsightsInstrumentationKeyKey];
             services.AddApplicationInsightsTelemetry(appInsightsKey);
 
+            
             services.AddDbContext<MyBeerCellarContext>(_ => _.UseSqlServer(Configuration[Constants.ConfigurationKeys.MyBeerCellarDbConnectionString]));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +59,11 @@ namespace MyBeerCellar.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new MyBeerCellarApiModule(Configuration));
         }
     }
 }

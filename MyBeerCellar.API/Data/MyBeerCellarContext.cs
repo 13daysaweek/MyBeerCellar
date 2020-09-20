@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyBeerCellar.API.Models;
 
 namespace MyBeerCellar.API.Data
 {
@@ -14,6 +15,8 @@ namespace MyBeerCellar.API.Data
             var conn = (Microsoft.Data.SqlClient.SqlConnection)Database.GetDbConnection();
             conn.AccessToken = (new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider()).GetAccessTokenAsync("https://database.windows.net/").Result;
         }
+
+        public DbSet<BeerStyle> BeerStyles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

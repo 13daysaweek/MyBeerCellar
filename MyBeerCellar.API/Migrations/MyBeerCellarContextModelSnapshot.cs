@@ -38,12 +38,35 @@ namespace MyBeerCellar.API.Migrations
 
                     b.Property<string>("StyleName")
                         .IsRequired()
-                        .HasColumnType("nvarchar")
-                        .HasMaxLength(255);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
                     b.HasKey("StyleId");
 
-                    b.ToTable("BeerStyle");
+                    b.ToTable("BeerStyle","dbo");
+
+                    b.HasData(
+                        new
+                        {
+                            StyleId = 1,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StyleName = "American IPA"
+                        },
+                        new
+                        {
+                            StyleId = 2,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StyleName = "New England IPA"
+                        },
+                        new
+                        {
+                            StyleId = 3,
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateModified = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StyleName = "Imperial Stout"
+                        });
                 });
 #pragma warning restore 612, 618
         }

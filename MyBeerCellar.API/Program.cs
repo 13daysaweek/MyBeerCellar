@@ -13,10 +13,9 @@ namespace MyBeerCellar.API
     {
         public static void Main(string[] args)
         {
-            if (args != null && args.Any(_ => _.ToLower() == "run-migration"))
+            if (args != null && args.Any(_ => _.ToLower() == Constants.MigrationUtility.LaunchPrefix))
             {
-                RunMigration();
-
+                RunMigration(args);
                 return;
             }
             
@@ -32,12 +31,32 @@ namespace MyBeerCellar.API
                 })
                 .UseStartup<Startup>());
 
-        private static void RunMigration()
+        private static void RunMigration(string[] args)
         {
-            var db = new MyBeerCellarContext();
-            Console.WriteLine("Getting ready to run the migration");
-            db.Database.Migrate();
-            Console.WriteLine("Done!");
+            if (args.Any(_ => _.ToLower().StartsWith(Constants.MigrationUtility.ConnectionStringArg)))
+            {
+                var arg = args.First(_ => _.ToLower().StartsWith(Constants.MigrationUtility.ConnectionStringArg));
+                var connectionString = arg.Replace("--connection-string=", string.Empty);
+
+                var context = new MyBeerCellarContext(connectionString);
+
+                try
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Applying migrations...");
+                    context.Database.Migrate();
+                    Console.WriteLine("Migrations applied successfully");
+                }
+                catch (Exception e)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Exception caught while applying migrations:");
+                    Console.WriteLine();
+                    Console.WriteLine(e);
+                    Console.ResetColor();
+                    throw;
+                }
+            }
         }
     }
 }

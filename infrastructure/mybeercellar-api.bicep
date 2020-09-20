@@ -125,6 +125,9 @@ resource tde 'Microsoft.Sql/servers/databases/transparentDataEncryption@2014-04-
 resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   name: webAppName
   location: location
+  identity: {
+      type: 'SystemAssigned'
+  }
   properties: {
       name: webAppName
       serverFarmId: farm.id
@@ -173,3 +176,6 @@ resource appInsights 'microsoft.insights/components@2018-05-01-preview' = {
 
 output appConfigResourceName string = appConfig.name
 output resourceGroupName string = resourceGroup().name
+output appServiceResourceName string = webApp.name
+output sqlServerResourceName string = sqlServerFullName
+output sqlDbResourceName string = sqlDb.name

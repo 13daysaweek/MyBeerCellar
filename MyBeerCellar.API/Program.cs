@@ -1,7 +1,11 @@
+using System;
+using System.Linq;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using MyBeerCellar.API.Data;
 
 namespace MyBeerCellar.API
 {
@@ -9,6 +13,13 @@ namespace MyBeerCellar.API
     {
         public static void Main(string[] args)
         {
+            if (args != null && args.Any(_ => _.ToLower() == "run-migration"))
+            {
+                RunMigration();
+
+                return;
+            }
+            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -20,5 +31,13 @@ namespace MyBeerCellar.API
                     config.AddAzureAppConfiguration(settings[Constants.ConfigurationKeys.AppConfigConnectionStringKey]);
                 })
                 .UseStartup<Startup>());
+
+        private static void RunMigration()
+        {
+            var db = new MyBeerCellarContext();
+            Console.WriteLine("Getting ready to run the migration");
+            db.Database.Migrate();
+            Console.WriteLine("Done!");
+        }
     }
 }

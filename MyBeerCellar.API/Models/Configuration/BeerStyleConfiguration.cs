@@ -23,6 +23,9 @@ namespace MyBeerCellar.API.Models.Configuration
                 .IsRequired()
                 .HasDefaultValueSql(Constants.DataConfiguration.CurrentUtcDateTimeDefault);
 
+            builder.HasIndex(_ => _.StyleName)
+                .IsUnique();
+
             builder.HasData(new BeerStyle
             {
                 StyleId = 1,

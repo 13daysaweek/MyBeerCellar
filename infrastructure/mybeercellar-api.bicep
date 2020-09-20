@@ -122,6 +122,14 @@ resource tde 'Microsoft.Sql/servers/databases/transparentDataEncryption@2014-04-
     }
 }
 
+resource allowAzureIps 'Microsoft.Sql/servers/firewallRules@2015-05-01-preview' = {
+    name: '${sqlServerFullName}/AllowAllWindowsAzureIps'
+    properties: {
+        startIpAddress: '0.0.0.0'
+        endIpAddress: '0.0.0.0'
+    }
+}
+
 resource webApp 'Microsoft.Web/sites@2018-11-01' = {
   name: webAppName
   location: location

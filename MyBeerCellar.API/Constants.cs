@@ -11,6 +11,7 @@ namespace MyBeerCellar.API
 
         public static class DataConfiguration
         {
+            public const string SchemaName = "dbo";
             public const string NvarcharDataType = "nvarchar";
             public const string CurrentUtcDateTimeDefault = "GETUTCDATE()";
         }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyBeerCellar.API.Data;
 using MyBeerCellar.API.Models;
 
 namespace MyBeerCellar.API.Controllers
@@ -13,26 +15,19 @@ namespace MyBeerCellar.API.Controllers
     [ProducesResponseType(typeof(IEnumerable<BeerStyle>), StatusCodes.Status200OK)]
     public class BeerStyleController : ControllerBase
     {
+        private readonly MyBeerCellarContext _context;
+
+        public BeerStyleController(MyBeerCellarContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public async Task<IEnumerable<BeerStyle>> Get()
         {
-            return await Task.FromResult(new List<BeerStyle>
-            {
-                new BeerStyle
-                {
-                    DateCreated = DateTime.UtcNow,
-                    DateModified = DateTime.UtcNow,
-                    StyleId = 1,
-                    StyleName = "Imperial Stout"
-                },
-                new BeerStyle
-                {
-                    DateCreated = DateTime.UtcNow,
-                    DateModified = DateTime.UtcNow,
-                    StyleId = 2,
-                    StyleName = "NE IPA"
-                }
-            }.AsEnumerable());
+            var styles = await _context.BeerStyles.ToListAsync();
+
+            return styles;
         }
 
         [HttpGet]
@@ -42,23 +37,18 @@ namespace MyBeerCellar.API.Controllers
         public async Task<IActionResult> Get(int id)
         {
             IActionResult result = null;
+            var style = await _context.BeerStyles.FindAsync(id);
 
-            if (id == 1)
+            if (style != null)
             {
-                result = Ok(new BeerStyle
-                {
-                    DateCreated = DateTime.UtcNow,
-                    DateModified = DateTime.UtcNow,
-                    StyleId = 1,
-                    StyleName = "Imperial Stout"
-                });
+                result = new OkObjectResult(style);
             }
             else
             {
                 result = NotFound();
             }
 
-            return await Task.FromResult(result);
+            return result;
         }
     }
 }

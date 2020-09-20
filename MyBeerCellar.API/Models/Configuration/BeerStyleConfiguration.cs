@@ -7,12 +7,13 @@ namespace MyBeerCellar.API.Models.Configuration
     {
         public void Configure(EntityTypeBuilder<BeerStyle> builder)
         {
+            builder.ToTable(nameof(BeerStyle), Constants.DataConfiguration.SchemaName);
+
             builder.HasKey(_ => _.StyleId);
 
             builder.Property(_ => _.StyleName)
                 .IsRequired()
-                .HasMaxLength(255)
-                .HasColumnType(Constants.DataConfiguration.NvarcharDataType);
+                .HasMaxLength(100);
 
             builder.Property(_ => _.DateCreated)
                 .IsRequired()
@@ -21,6 +22,22 @@ namespace MyBeerCellar.API.Models.Configuration
             builder.Property(_ => _.DateModified)
                 .IsRequired()
                 .HasDefaultValueSql(Constants.DataConfiguration.CurrentUtcDateTimeDefault);
+
+            builder.HasData(new BeerStyle
+            {
+                StyleId = 1,
+                StyleName = "American IPA"
+            },
+                new BeerStyle
+                {
+                    StyleId = 2,
+                    StyleName = "New England IPA"
+                },
+                new BeerStyle
+                {
+                    StyleId = 3,
+                    StyleName = "Imperial Stout"
+                });
         }
     }
 }

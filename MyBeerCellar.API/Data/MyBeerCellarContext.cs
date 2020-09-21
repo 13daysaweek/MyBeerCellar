@@ -31,6 +31,8 @@ namespace MyBeerCellar.API.Data
 
         public DbSet<BeerStyle> BeerStyles { get; set; }
 
+        public DbSet<BeerContainer> BeerContainer { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);

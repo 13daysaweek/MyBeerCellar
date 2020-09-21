@@ -76,12 +76,18 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
       - task: Bash@3
-        displayName: 'Export data migration script'
+        displayName: 'Install EF tooling'
         inputs:
           targetType: inline
           script: |
             dotnet tool install --global dotnet-ef
-            ~/.dotnet/dotnet-ef ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
+
+      - task: Bash@3
+        displayName: 'Export data migration script'
+        inputs:
+          targetType: inline
+          script: |
+            dotnet ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1
         displayName: 'Publish migration script'

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MyBeerCellar.API.Models.Configuration
@@ -29,6 +28,16 @@ namespace MyBeerCellar.API.Models.Configuration
             builder.Property(_ => _.DateModified)
                 .IsRequired()
                 .HasDefaultValueSql(Constants.DataConfiguration.CurrentUtcDateTimeDefault);
+
+            builder.HasOne(_ => _.Container)
+                .WithMany()
+                .HasForeignKey("BeerContainerId")
+                .IsRequired();
+
+            builder.HasOne(_ => _.Style)
+                .WithMany()
+                .HasForeignKey("BeerStyleId")
+                .IsRequired();
 
             builder.HasIndex(_ => new {_.ItemName, _.YearProduced})
                 .IsUnique();

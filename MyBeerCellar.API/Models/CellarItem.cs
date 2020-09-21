@@ -12,6 +12,10 @@ namespace MyBeerCellar.API.Models
 
         public int Quantity { get; set; }
 
+        public BeerStyle Style { get; set; }
+
+        public BeerContainer Container { get; set; }
+
         public DateTime DateCreated { get; set; }
 
         public DateTime DateModified { get; set; }

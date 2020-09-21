@@ -31,7 +31,9 @@ namespace MyBeerCellar.API.Data
 
         public DbSet<BeerStyle> BeerStyles { get; set; }
 
-        public DbSet<BeerContainer> BeerContainer { get; set; }
+        public DbSet<BeerContainer> BeerContainers { get; set; }
+
+        public DbSet<CellarItem> CellarItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

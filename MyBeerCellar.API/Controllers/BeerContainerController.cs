@@ -23,7 +23,7 @@ namespace MyBeerCellar.API.Controllers
         [ProducesResponseType(typeof(IEnumerable<BeerContainer>), StatusCodes.Status200OK)]
         public async Task<IEnumerable<BeerContainer>> GetAsync()
         {
-            var containers = await _context.BeerContainer.ToListAsync();
+            var containers = await _context.BeerContainers.ToListAsync();
 
             return containers;
         }
@@ -35,7 +35,7 @@ namespace MyBeerCellar.API.Controllers
         {
             IActionResult result = null;
 
-            var container = await _context.BeerContainer.FindAsync(id);
+            var container = await _context.BeerContainers.FindAsync(id);
 
             if (container != null)
             {
@@ -60,7 +60,7 @@ namespace MyBeerCellar.API.Controllers
             {
                 try
                 {
-                    await _context.BeerContainer.AddAsync(container);
+                    await _context.BeerContainers.AddAsync(container);
                     await _context.SaveChangesAsync();
                     result = CreatedAtAction("Get", new {id = container.BeerContainerId}, container);
                 }
@@ -79,19 +79,19 @@ namespace MyBeerCellar.API.Controllers
 
         [HttpDelete]
         [Route("/api/[controller]/{id}")]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             IActionResult result = null;
 
-            var containerToDelete = await _context.BeerContainer.FindAsync(id);
+            var containerToDelete = await _context.BeerContainers.FindAsync(id);
 
             if (containerToDelete != null)
             {
-                _context.BeerContainer.Remove(containerToDelete);
+                _context.BeerContainers.Remove(containerToDelete);
                 await _context.SaveChangesAsync();
-                result = Accepted();
+                result = NoContent();
             }
             else
             {
@@ -111,7 +111,7 @@ namespace MyBeerCellar.API.Controllers
 
             if (ModelState.IsValid)
             {
-                var containerToUpdate = await _context.BeerContainer.FindAsync(container.BeerContainerId);
+                var containerToUpdate = await _context.BeerContainers.FindAsync(container.BeerContainerId);
 
                 if (containerToUpdate != null)
                 {

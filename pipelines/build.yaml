@@ -12,6 +12,8 @@ variables:
 stages:
 - stage: Build
   displayName: Build stage
+  variables:
+  - group: 'Development Variables'
   jobs:
   - job: BuildInfrastructure
     displayName: Build Infrastructure
@@ -96,6 +98,8 @@ stages:
           targetType: inline
           workingDirectory: '$(System.DefaultWorkingDirectory)/MyBeerCellar.API'
           script: |
+            export MIGRATION_CONNECTION_STRING=$(migrationConnectionString)
+            echo $MIGRATION_CONNECTION_STRING
             ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1

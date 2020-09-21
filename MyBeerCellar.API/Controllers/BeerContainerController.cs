@@ -102,5 +102,36 @@ namespace MyBeerCellar.API.Controllers
 
             return result;
         }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(BeerContainer), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PutAsync(BeerContainer container)
+        {
+            IActionResult result = null;
+
+            if (ModelState.IsValid)
+            {
+                var containerToUpdate = await _context.BeerContainer.FindAsync(container.BeerContainerId);
+
+                if (containerToUpdate != null)
+                {
+                    containerToUpdate.ContainerType = container.ContainerType;
+                    containerToUpdate.DateModified = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    result = NotFound();
+                }
+            }
+            else
+            {
+                result = BadRequest();
+            }
+
+            return result;
+        }
     }
 }

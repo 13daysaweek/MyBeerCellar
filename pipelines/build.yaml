@@ -88,6 +88,15 @@ stages:
           targetType: inline
           workingDirectory: 'MyBeerCellar.API/MyBeerCellar.API'
           script: |
+            ls -al ~/
+            ls -al $(System.DefaultWorkingDirectory)
+
+      - task: Bash@3
+        displayName: 'Export data migration script'
+        inputs:
+          targetType: inline
+          workingDirectory: 'MyBeerCellar.API/MyBeerCellar.API'
+          script: |
             ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1

@@ -79,5 +79,79 @@ namespace MyBeerCellar.API.Controllers
 
             return result;
         }
+
+        [HttpDelete("/api/[controller]/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            IActionResult result = null;
+
+            try
+            {
+                var item = await _context.CellarItems.FindAsync(id);
+
+                if (item != null)
+                {
+                    _context.CellarItems.Remove(item);
+                    await _context.SaveChangesAsync();
+                    result = NoContent();
+                }
+                else
+                {
+                    result = NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                result = BadRequest();
+            }
+
+            return result;
+        }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(CellarItem), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Put(UpdateCellarItem updateCellarItemRequest)
+        {
+            IActionResult result = null;
+
+            try
+            {
+                var existingItem = await _context.CellarItems.FindAsync(updateCellarItemRequest.CellarItemId);
+
+                if (existingItem != null)
+                {
+                    existingItem.DateModified = DateTime.UtcNow;
+                    existingItem.BeerContainerId = updateCellarItemRequest.BeerContainerId;
+                    existingItem.BeerStyleId = updateCellarItemRequest.BeerStyleId;
+                    existingItem.ItemName = updateCellarItemRequest.ItemName;
+                    existingItem.Quantity = updateCellarItemRequest.Quantity;
+                    existingItem.YearProduced = updateCellarItemRequest.YearProduced;
+                    await _context.SaveChangesAsync();
+
+                    var updatedItem = await _context.CellarItems
+                        .Include(_ => _.Style)
+                        .Include(_ => _.Container)
+                        .FirstAsync(_ => _.CellarItemId == updateCellarItemRequest.CellarItemId);
+
+                    result = Ok(updatedItem);
+                }
+                else
+                {
+                    result = NotFound();
+                }
+
+            }
+            catch (Exception e)
+            {
+                result = BadRequest();
+            }
+
+            return result;
+        }
     }
 }

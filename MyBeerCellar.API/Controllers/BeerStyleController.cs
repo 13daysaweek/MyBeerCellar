@@ -80,7 +80,7 @@ namespace MyBeerCellar.API.Controllers
 
         [HttpDelete]
         [Route("/api/[controller]/{id}")]
-        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync(int id)
         {
@@ -91,7 +91,7 @@ namespace MyBeerCellar.API.Controllers
             {
                 _context.BeerStyles.Remove(style);
                 await _context.SaveChangesAsync();
-                result = Accepted();
+                result = NoContent();
             }
             else
             {

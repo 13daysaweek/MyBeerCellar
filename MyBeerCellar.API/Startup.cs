@@ -1,4 +1,5 @@
 using Autofac;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ namespace MyBeerCellar.API
 
             
             services.AddDbContext<MyBeerCellarContext>(_ => _.UseSqlServer(Configuration[Constants.ConfigurationKeys.MyBeerCellarDbConnectionString]));
-            
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

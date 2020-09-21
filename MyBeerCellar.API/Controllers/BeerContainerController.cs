@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +42,58 @@ namespace MyBeerCellar.API.Controllers
             if (container != null)
             {
                 result = Ok(container);
+            }
+            else
+            {
+                result = NotFound();
+            }
+
+            return result;
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(BeerContainer), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PostAsync(BeerContainer container)
+        {
+            IActionResult result = null;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _context.BeerContainer.AddAsync(container);
+                    await _context.SaveChangesAsync();
+                    result = CreatedAtAction(nameof(GetByIdAsync), new {id = container.BeerContainerId}, container);
+                }
+                catch (Exception e)
+                {
+                    result = BadRequest();
+                }
+            }
+            else
+            {
+                result = BadRequest();
+            }
+
+            return result;
+        }
+
+        [HttpDelete]
+        [Route("/api/[controller]/{id}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            IActionResult result = null;
+
+            var containerToDelete = await _context.BeerContainer.FindAsync(id);
+
+            if (containerToDelete != null)
+            {
+                _context.BeerContainer.Remove(containerToDelete);
+                await _context.SaveChangesAsync();
+                result = Accepted();
             }
             else
             {

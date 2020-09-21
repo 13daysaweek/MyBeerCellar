@@ -6,7 +6,7 @@ namespace MyBeerCellar.API.Data
 {
     public class MyBeerCellarContext : DbContext
     {
-        private readonly string _connectionString;
+        private string _connectionString;
 
         public MyBeerCellarContext()
         {
@@ -40,6 +40,12 @@ namespace MyBeerCellar.API.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    var envVar = Environment.GetEnvironmentVariable("MIGRATION_CONNECTION_STRING");
+                    _connectionString = envVar;
+                }
+
                 optionsBuilder.UseSqlServer(_connectionString);
             }
         }

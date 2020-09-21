@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using MyBeerCellar.API.Data;
 using MyBeerCellar.API.Models;
 
 namespace MyBeerCellar.API.Controllers
 {
+    [Route("/api/[controller]")]
     public class BeerContainerController : BaseApiController
     {
         private readonly MyBeerCellarContext _context;
@@ -30,10 +28,10 @@ namespace MyBeerCellar.API.Controllers
             return containers;
         }
 
-        [HttpGet]
-        [Route("/api/[controller]/{id}")]
+        [HttpGet("/api/[controller]/{id}", Name = "Get")]
         [ProducesResponseTypeAttribute(typeof(BeerContainer), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Get(int id)
         {
             IActionResult result = null;
 
@@ -64,7 +62,7 @@ namespace MyBeerCellar.API.Controllers
                 {
                     await _context.BeerContainer.AddAsync(container);
                     await _context.SaveChangesAsync();
-                    result = CreatedAtAction(nameof(GetByIdAsync), new {id = container.BeerContainerId}, container);
+                    result = CreatedAtAction("Get", new {id = container.BeerContainerId}, container);
                 }
                 catch (Exception e)
                 {
@@ -120,6 +118,7 @@ namespace MyBeerCellar.API.Controllers
                     containerToUpdate.ContainerType = container.ContainerType;
                     containerToUpdate.DateModified = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
+                    result = Ok(container);
                 }
                 else
                 {

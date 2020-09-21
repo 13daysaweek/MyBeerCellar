@@ -81,7 +81,7 @@ stages:
           targetType: inline
           script: |
             dotnet tool install --global dotnet-ef
-            dotnet ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
+            ~/.dotnet/dotnet-ef ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1
         displayName: 'Publish migration script'

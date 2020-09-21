@@ -40,6 +40,7 @@ stages:
       inputs:
         PathtoPublish: $(Build.ArtifactStagingDirectory)/infrastructure/
         ArtifactName: 'Infrastructure'
+        publishLocation: Container
   
   - job: BuildCode
     displayName: 'Build API Code'
@@ -67,73 +68,24 @@ stages:
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)/code/'
         ArtifactName: 'Code'
+        publishLocation: Container
 
-# - stage: Release
-#   displayName: 'Release stage'
-#   jobs:
-#     - job:
-#       displayName: 'Release Infrastructure'
-#       steps:
-#       - task: DownloadPipelineArtifact@2
-#         displayName: 'Download artifact'
-#         inputs:
-#           buildType: 'current'
-#           artifactName: $(artifact)
-#           targetPath: $(System.DefaultWorkingDirectory)
+  - job: CreateDataMigrationScript
+    displayName: 'Export data migration script'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: Bash@3
+        displayName: 'Export data migration script'
+        inputs:
+          targetType: inline
+          script: |
+            dotnet tool install --global dotnet-ef
+            dotnet ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
-#       # Why does the artifact appear to contain the entire source tree?
-#       - task: AzureResourceManagerTemplateDeployment@3
-#         displayName: 'Deploy ARM template'
-#         inputs:
-#           deploymentScope: 'Resource Group'
-#           resourceGroupName: $(resourceGroup)
-#           'location': $(location)
-#           azureResourceManagerConnection: 'AIRS'
-#           action: 'Create Or Update Resource Group'
-#           templateLocation: 'Linked artifact'
-#           csmFile: $(System.DefaultWorkingDirectory)/infrastructure/mybeercellar-api.json
-#           deploymentMode: 'Incremental'
-    
-#   - job: Build
-#     displayName: Build
-#     pool: $(pool)
-#     steps:
-#     - script: dotnet build --configuration $(buildConfiguration)
-#       displayName: 'dotnet build $(buildConfiguration)'
-
-#     - task: DotNetCoreCLI@2
-#       displayName: 'dotnet publish'
-#       inputs:
-#         command: publish
-#         publishWebProjects: True
-#         arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-#         zipAfterPublish: True
-
-#     - task: PublishPipelineArtifact@1
-#       displayName: 'Publish artifact'
-#       inputs:
-#         targetPath: '$(Build.ArtifactStagingDirectory)'
-#         artifact: '$(artifact)'
-#         publishLocation: 'pipeline'
-
-# - stage: Release
-#   displayName: Release stage
-#   jobs:
-#   - job:
-#     displayName: Release
-#     pool: $(pool)
-#     steps:  
-#     - task: DownloadPipelineArtifact@2
-#       displayName: 'Download artifact'
-#       inputs:
-#         buildType: 'current'
-#         artifactName: '$(artifact)'
-#         targetPath: '$(System.DefaultWorkingDirectory)'
-
-#     - task: AzureRmWebAppDeployment@4
-#       inputs:
-#         ConnectionType: 'AzureRM'
-#         azureSubscription: 'AIRS'
-#         appType: 'webApp'
-#         WebAppName: 'secdeploy'
-#         packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish migration script'
+        inputs:
+         PathtoPublish: '$(Build.ArtifactStagingDirectory)/migrations/'
+         ArtifactName: 'Migrations'
+         publishLocation: Container

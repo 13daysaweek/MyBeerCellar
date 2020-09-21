@@ -56,6 +56,16 @@ stages:
                  connectionString=$(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
                  az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings AppConfig=$connectionString
 
+           - task: SqlDacpacDeploymentOnMachineGroup@0
+             inputs:
+               TaskType: 'sqlQuery'
+               SqlFile: '$(Pipeline.Worksapce)/build/Migrations/migration_script.sql'
+               ServerName: '$(migrationSqlServerName)'
+               DatabaseName: '$(migrationSqlDatabaseName)'
+               AuthScheme: 'sqlServerAuthentication'
+               SqlUsername: '$(migrationSqlLogin)'
+               SqlPassword: '$(migrationSqlPassword)'
+
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
              inputs:
@@ -118,6 +128,16 @@ stages:
                inlineScript: |
                  connectionString=$(az appconfig credential list -n mybeercellar-config-prod -g my-beer-cellar-prod --query [0].connectionString -o tsv)
                  az webapp config connection-string set -g my-beer-cellar-prod -n mybrewcellar-api-prod -t custom --settings AppConfig=$connectionString
+
+           - task: SqlDacpacDeploymentOnMachineGroup@0
+             inputs:
+               TaskType: 'sqlQuery'
+               SqlFile: '$(Pipeline.Worksapce)/build/Migrations/migration_script.sql'
+               ServerName: '$(migrationSqlServerName)'
+               DatabaseName: '$(migrationSqlDatabaseName)'
+               AuthScheme: 'sqlServerAuthentication'
+               SqlUsername: '$(migrationSqlLogin)'
+               SqlPassword: '$(migrationSqlPassword)'
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'

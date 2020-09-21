@@ -96,7 +96,7 @@ stages:
           targetType: inline
           workingDirectory: '$(System.DefaultWorkingDirectory)/MyBeerCellar.API'
           script: |
-            dotnet ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
+            ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1
         displayName: 'Publish migration script'

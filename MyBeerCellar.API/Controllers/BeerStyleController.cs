@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBeerCellar.API.Data;
 using MyBeerCellar.API.Models;
+using MyBeerCellar.API.ViewModels;
 
 namespace MyBeerCellar.API.Controllers
 {
@@ -14,10 +16,12 @@ namespace MyBeerCellar.API.Controllers
     public class BeerStyleController : ControllerBase
     {
         private readonly MyBeerCellarContext _context;
+        private readonly IMapper _mapper;
 
-        public BeerStyleController(MyBeerCellarContext context)
+        public BeerStyleController(MyBeerCellarContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -53,28 +57,22 @@ namespace MyBeerCellar.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(BeerStyle), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostAsync(BeerStyle beerStyle)
+        public async Task<IActionResult> PostAsync(CreateBeerStyle beerStyle)
         {
             IActionResult result = null;
 
-            if (!string.IsNullOrEmpty(beerStyle.StyleName))
+            try
             {
-                try
-                {
-                    await _context.BeerStyles.AddAsync(beerStyle);
-                    await _context.SaveChangesAsync();
-                    result = CreatedAtAction(nameof(GetByIdAsync), new { id = beerStyle.StyleId }, beerStyle);
-                }
-                catch (Exception e)
-                {
-                    result = BadRequest();
-                }
+                var itemToAdd = _mapper.Map<BeerStyle>(beerStyle);
+                await _context.BeerStyles.AddAsync(itemToAdd);
+                await _context.SaveChangesAsync();
+                result = CreatedAtAction(nameof(GetByIdAsync), new { id = itemToAdd.StyleId }, itemToAdd);
             }
-            else
+            catch (Exception e)
             {
                 result = BadRequest();
             }
-
+            
             return result;
         }
 
@@ -105,14 +103,9 @@ namespace MyBeerCellar.API.Controllers
         [ProducesResponseType(typeof(BeerStyle), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PutAsync(BeerStyle beerStyle)
+        public async Task<IActionResult> PutAsync(UpdateBeerStyle beerStyle)
         {
             IActionResult result = null;
-
-            if (!ModelState.IsValid)
-            {
-                result = BadRequest();
-            }
 
             var style = await _context.BeerStyles.FindAsync(beerStyle.StyleId);
 

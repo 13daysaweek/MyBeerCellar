@@ -86,6 +86,7 @@ stages:
         displayName: 'Export data migration script'
         inputs:
           targetType: inline
+          workingDirectory: '$(Sytem.DefaultWorkingDirectory)/MyBeerCellar.API/MyBeerCellar.API'
           script: |
             ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       

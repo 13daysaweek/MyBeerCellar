@@ -80,6 +80,14 @@ stages:
         inputs:
           targetType: inline
           script: |
+            ls -al ~
+            ls -al ~/.dotnet/
+            ls -al ~/.dotnet/tools/    
+      - task: Bash@3
+        displayName: 'Install EF tooling'
+        inputs:
+          targetType: inline
+          script: |
             dotnet tool install --global dotnet-ef
 
       - task: Bash@3

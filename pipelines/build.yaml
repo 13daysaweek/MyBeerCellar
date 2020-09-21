@@ -80,22 +80,14 @@ stages:
         inputs:
           targetType: inline
           script: |
-            ls -al ~
-            ls -al ~/.dotnet/
-            ls -al ~/.dotnet/tools/    
-      - task: Bash@3
-        displayName: 'Install EF tooling'
-        inputs:
-          targetType: inline
-          script: |
-            dotnet tool install --global dotnet-ef
+            dotnet tool install --tool-path ~/eftools/ dotnet-ef
 
       - task: Bash@3
         displayName: 'Export data migration script'
         inputs:
           targetType: inline
           script: |
-            dotnet ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
+            ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
       
       - task: PublishBuildArtifacts@1
         displayName: 'Publish migration script'

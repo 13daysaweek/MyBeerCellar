@@ -1,5 +1,6 @@
 using Autofac;
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,8 @@ namespace MyBeerCellar.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddFluentValidation(_ => _.RegisterValidatorsFromAssembly(typeof(Startup).Assembly));
             services.AddSwaggerGen();
 
             var appInsightsKey = Configuration[Constants.ConfigurationKeys.AppInsightsInstrumentationKeyKey];

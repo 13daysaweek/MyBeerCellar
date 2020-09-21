@@ -8,7 +8,7 @@ resources:
 
 variables:
   skipComponentGovernanceDetection: true
-  pool: 'ubuntu-latest'
+  pool: 'windows-latest'
   azure-sub-dev: 'AIRS'
   azure-sub-prod: 'MSDN'
   location: 'eastus'
@@ -55,12 +55,6 @@ stages:
                inlineScript: |
                  connectionString=$(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
                  az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings AppConfig=$connectionString
-           
-           - task: Bash@3
-             displayName: 'Sql Test'
-             inputs:
-              targetType: 'inline'
-              script: 'sqlcmd --?'
 
            - task: SqlAzureDacpacDeployment@1
              displayName: 'Apply database migration script'

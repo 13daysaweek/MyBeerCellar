@@ -31,12 +31,12 @@ namespace MyBeerCellar.API.Models.Configuration
 
             builder.HasOne(_ => _.Container)
                 .WithMany()
-                .HasForeignKey("BeerContainerId")
+                .HasForeignKey(_ => _.BeerContainerId)
                 .IsRequired();
 
             builder.HasOne(_ => _.Style)
                 .WithMany()
-                .HasForeignKey("BeerStyleId")
+                .HasForeignKey(_ => _.BeerStyleId)
                 .IsRequired();
 
             builder.HasIndex(_ => new {_.ItemName, _.YearProduced})

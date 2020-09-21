@@ -56,15 +56,18 @@ stages:
                  connectionString=$(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
                  az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings AppConfig=$connectionString
 
-           - task: SqlDacpacDeploymentOnMachineGroup@0
+           - task: SqlAzureDacpacDeployment@1
+             displayName: 'Apply database migration script'
              inputs:
-               TaskType: 'sqlQuery'
-               SqlFile: '$(Pipeline.Worksapce)/build/Migrations/migration_script.sql'
+               azureSubscription: 'AIRS'
+               AuthenticationType: 'server'
                ServerName: '$(migrationSqlServerName)'
                DatabaseName: '$(migrationSqlDatabaseName)'
-               AuthScheme: 'sqlServerAuthentication'
-               SqlUsername: '$(migrationSqlLogin)'
+               SqlUsername: '$(migrationSqlLogin'
                SqlPassword: '$(migrationSqlPassword)'
+               deployType: 'SqlTask'
+               SqlFile: '$(Pipeline.Worksapce)/build/Migrations/migration_script.sql'
+               IpDetectionMethod: 'AutoDetect'
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'
@@ -138,6 +141,19 @@ stages:
                AuthScheme: 'sqlServerAuthentication'
                SqlUsername: '$(migrationSqlLogin)'
                SqlPassword: '$(migrationSqlPassword)'
+
+           - task: SqlAzureDacpacDeployment@1
+             displayName: 'Apply database migration script'
+             inputs:
+               azureSubscription: 'MSDN'
+               AuthenticationType: 'server'
+               ServerName: '$(migrationSqlServerName)'
+               DatabaseName: '$(migrationSqlDatabaseName)'
+               SqlUsername: '$(migrationSqlLogin'
+               SqlPassword: '$(migrationSqlPassword)'
+               deployType: 'SqlTask'
+               SqlFile: '$(Pipeline.Worksapce)/build/Migrations/migration_script.sql'
+               IpDetectionMethod: 'AutoDetect'
 
            - task: AzureRmWebAppDeployment@4
              displayName: 'Deploy API code'

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyBeerCellar.API.Data;
 using MyBeerCellar.API.Models;
+using MyBeerCellar.API.ViewModels;
 
 namespace MyBeerCellar.API.Controllers
 {
@@ -13,10 +15,12 @@ namespace MyBeerCellar.API.Controllers
     public class BeerContainerController : BaseApiController
     {
         private readonly MyBeerCellarContext _context;
+        private readonly IMapper _mapper;
 
-        public BeerContainerController(MyBeerCellarContext context)
+        public BeerContainerController(MyBeerCellarContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -52,24 +56,18 @@ namespace MyBeerCellar.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(BeerContainer), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostAsync(BeerContainer container)
+        public async Task<IActionResult> PostAsync(CreateBeerContainer container)
         {
             IActionResult result = null;
 
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    await _context.BeerContainers.AddAsync(container);
-                    await _context.SaveChangesAsync();
-                    result = CreatedAtAction("Get", new {id = container.BeerContainerId}, container);
-                }
-                catch (Exception e)
-                {
-                    result = BadRequest();
-                }
+                var containerToCreate = _mapper.Map<BeerContainer>(container);
+                await _context.BeerContainers.AddAsync(containerToCreate);
+                await _context.SaveChangesAsync();
+                result = CreatedAtAction("Get", new {id = containerToCreate.BeerContainerId}, containerToCreate);
             }
-            else
+            catch (Exception e)
             {
                 result = BadRequest();
             }
@@ -105,7 +103,7 @@ namespace MyBeerCellar.API.Controllers
         [ProducesResponseType(typeof(BeerContainer), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PutAsync(BeerContainer container)
+        public async Task<IActionResult> PutAsync(UpdateBeerContainer container)
         {
             IActionResult result = null;
 

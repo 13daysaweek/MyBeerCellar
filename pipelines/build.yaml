@@ -62,6 +62,12 @@ stages:
         command: 'test'
         arguments: '--logger:trx --collect:"XPlat Code Coverage"'
         testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
       
     - task: DotNetCoreCLI@2
       displayName: 'Publish'

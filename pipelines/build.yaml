@@ -55,6 +55,13 @@ stages:
         command: build
         projects: '**/*.csproj'
         arguments: '-- configuration Release'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run Unit Tests'
+      inputs:
+        command: 'test'
+        arguments: '--logger:trx --collect:"XPlat Code Coverage"'
+        testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
       
     - task: DotNetCoreCLI@2
       displayName: 'Publish'

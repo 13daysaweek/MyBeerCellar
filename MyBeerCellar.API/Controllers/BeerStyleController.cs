@@ -20,7 +20,7 @@ namespace MyBeerCellar.API.Controllers
 
         public BeerStyleController(MyBeerCellarContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 

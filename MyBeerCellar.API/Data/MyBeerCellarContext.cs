@@ -25,8 +25,11 @@ namespace MyBeerCellar.API.Data
 
         public MyBeerCellarContext(DbContextOptions<MyBeerCellarContext> optionsBuilderOptions) : base(optionsBuilderOptions)
         {
-            var conn = (Microsoft.Data.SqlClient.SqlConnection)Database.GetDbConnection();
-            conn.AccessToken = (new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider()).GetAccessTokenAsync("https://database.windows.net/").Result;
+            if (!Database.ProviderName.Contains("Memory"))
+            {
+                var conn = (Microsoft.Data.SqlClient.SqlConnection)Database.GetDbConnection();
+                conn.AccessToken = (new Microsoft.Azure.Services.AppAuthentication.AzureServiceTokenProvider()).GetAccessTokenAsync("https://database.windows.net/").Result;
+            }
         }
 
         public DbSet<BeerStyle> BeerStyles { get; set; }

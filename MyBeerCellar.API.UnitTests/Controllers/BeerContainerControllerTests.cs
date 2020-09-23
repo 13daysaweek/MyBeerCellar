@@ -169,6 +169,47 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .BeOfType<BadRequestResult>();
         }
 
+        [Fact]
+        public async Task DeleteAsync_Should_Remove_Existing_Item()
+        {
+            // Arrange
+            var existingItem = TestFixture.Create<BeerContainer>();
+            await _context.BeerContainers.AddAsync(existingItem);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.DeleteAsync(existingItem.BeerContainerId);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NoContentResult>();
+
+            var item = await _context.BeerContainers.FirstOrDefaultAsync(_ => _.BeerContainerId == existingItem.BeerContainerId);
+
+            item.Should()
+                .BeNull();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_Should_Return_NotFound_When_Id_Does_Not_Exist()
+        {
+            // Arrange
+            var item = TestFixture.Create<BeerContainer>();
+
+            // Act
+            var result = await _controller.DeleteAsync(item.BeerContainerId);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NotFoundResult>();
+        }
+
         private void InitContext()
         {
             var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()

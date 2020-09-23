@@ -210,6 +210,58 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .BeOfType<NotFoundResult>();
         }
 
+        [Fact]
+        public async Task PutAsync_Should_Update_Existing_Container()
+        {
+            // Arrange
+            var existingItem = TestFixture.Create<BeerContainer>();
+            var updateRequest = TestFixture.Build<UpdateBeerContainer>()
+                .With(_ => _.BeerContainerId, existingItem.BeerContainerId)
+                .Create();
+
+            await _context.BeerContainers.AddAsync(existingItem);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.PutAsync(updateRequest);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<OkObjectResult>();
+
+            var okResult = result as OkObjectResult;
+            var updatedContainer = okResult.Value as BeerContainer;
+
+            updatedContainer.ContainerType
+                .Should()
+                .Be(updatedContainer.ContainerType);
+
+            var dbItem = await _context.BeerContainers.FindAsync(updateRequest.BeerContainerId);
+            dbItem.ContainerType
+                .Should()
+                .Be(updatedContainer.ContainerType);
+        }
+
+        [Fact]
+        public async Task PutAsync_Should_Return_Not_Found_When_Item_Does_Not_Exist()
+        {
+            // Arrange
+            var itemToUpdate = TestFixture.Create<UpdateBeerContainer>();
+
+            // Act
+            var result = await _controller.PutAsync(itemToUpdate);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NotFoundResult>();
+        }
+
         private void InitContext()
         {
             var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()

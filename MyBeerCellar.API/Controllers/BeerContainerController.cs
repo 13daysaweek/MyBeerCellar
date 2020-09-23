@@ -107,7 +107,7 @@ namespace MyBeerCellar.API.Controllers
         {
             IActionResult result = null;
 
-            if (ModelState.IsValid)
+            try
             {
                 var containerToUpdate = await _context.BeerContainers.FindAsync(container.BeerContainerId);
 
@@ -116,14 +116,14 @@ namespace MyBeerCellar.API.Controllers
                     containerToUpdate.ContainerType = container.ContainerType;
                     containerToUpdate.DateModified = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
-                    result = Ok(container);
+                    result = Ok(containerToUpdate);
                 }
                 else
                 {
                     result = NotFound();
                 }
             }
-            else
+            catch (Exception e)
             {
                 result = BadRequest();
             }

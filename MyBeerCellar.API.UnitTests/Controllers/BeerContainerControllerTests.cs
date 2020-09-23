@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoMapper;
@@ -11,6 +12,7 @@ using Moq;
 using MyBeerCellar.API.Controllers;
 using MyBeerCellar.API.Data;
 using MyBeerCellar.API.Models;
+using MyBeerCellar.API.ViewModels;
 using Xunit;
 
 namespace MyBeerCellar.API.UnitTests.Controllers
@@ -116,6 +118,55 @@ namespace MyBeerCellar.API.UnitTests.Controllers
 
             result.Should()
                 .BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task PostAsync_Should_Save_New_Container_To_Database()
+        {
+            // Arrange
+            var containerToSave = TestFixture.Create<CreateBeerContainer>();
+            var mappedContainer = TestFixture.Create<BeerContainer>();
+
+            _mockMapper.Setup(it => it.Map<BeerContainer>(containerToSave))
+                .Returns(mappedContainer);
+
+            // Act
+            var result = await _controller.PostAsync(containerToSave);
+
+            // Assert
+            TestMockRepository.VerifyAll();
+
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<CreatedAtActionResult>();
+
+            var dbItem = await _context.BeerContainers.FirstOrDefaultAsync(_ => _.ContainerType == mappedContainer.ContainerType);
+            dbItem.Should()
+                .NotBeNull();
+        }
+
+        [Fact]
+        public async Task PostAsync_Should_Return_BadRequest_On_Exception()
+        {
+            // Arrange
+            var containerToSave = TestFixture.Create<CreateBeerContainer>();
+
+            _mockMapper.Setup(it => it.Map<BeerContainer>(containerToSave))
+                .Throws<ArgumentException>();
+
+            // Act
+            var result = await _controller.PostAsync(containerToSave);
+
+            // Assert
+            TestMockRepository.VerifyAll();
+
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<BadRequestResult>();
         }
 
         private void InitContext()

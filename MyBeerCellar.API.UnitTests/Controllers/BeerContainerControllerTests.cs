@@ -262,6 +262,23 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .BeOfType<NotFoundResult>();
         }
 
+        [Fact]
+        public async Task PutAsync_Should_Return_BadRequest_On_Exception()
+        {
+            // Arrange
+            UpdateBeerContainer container = null;
+
+            // Act
+            var result = await _controller.PutAsync(container);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<BadRequestResult>();
+        }
+
         private void InitContext()
         {
             var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()

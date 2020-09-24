@@ -8,8 +8,9 @@ namespace MyBeerCellar.API.UnitTests
     {
         protected BaseContextUnitTest()
         {
+            // Hopefully using new guid in the db name will eliminate the inconsistent test failures :\
             var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()
-                .UseInMemoryDatabase("MyBeerCellar");
+                .UseInMemoryDatabase($"MyBeerCellar{Guid.NewGuid()}");
 
             Context = new MyBeerCellarContext(builder.Options);
         }

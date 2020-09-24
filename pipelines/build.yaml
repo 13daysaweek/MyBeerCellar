@@ -60,7 +60,7 @@ stages:
       displayName: 'Run Unit Tests'
       inputs:
         command: 'test'
-        arguments: '--logger:trx --collect:"XPlat Code Coverage"'
+        arguments: '--logger:trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)'
         testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
 
     - task: PublishCodeCoverageResults@1

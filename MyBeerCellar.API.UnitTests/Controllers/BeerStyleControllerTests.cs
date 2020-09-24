@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoMapper;
+using Azure.Core;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -150,7 +151,70 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .Be(itemToCreate.StyleName);
         }
 
-        private void InitContext()
+        [Fact]
+        public async Task PostAsync_Should_Return_BadRequest_On_Exception()
+        {
+            // Arrange
+            var createRequest = TestFixture.Create<CreateBeerStyle>();
+
+            _mockMapper.Setup(it => it.Map<BeerStyle>(createRequest))
+                .Throws<ArgumentException>();
+
+            // Act
+            var result = await _controller.PostAsync(createRequest);
+
+            // Assert
+            TestMockRepository.VerifyAll();
+
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<BadRequestResult>();
+        }
+
+        [Fact]
+        public async Task DeleteAsync_Should_Remove_Item()
+        {
+            // Arrange
+            var style = TestFixture.Create<BeerStyle>();
+            await _context.BeerStyles.AddAsync(style);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.DeleteAsync(style.StyleId);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NoContentResult>();
+
+            var dbItem = await _context.BeerStyles.FindAsync(style.StyleId);
+
+            dbItem.Should()
+                .BeNull();
+        }
+
+        [Fact]
+        public async Task Delete_Should_Return_NotFound_If_Item_Does_Not_Exist()
+        {
+            // Arrange
+            var id = TestFixture.Create<int>();
+
+            // Act
+            var result = await _controller.DeleteAsync(id);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NotFoundResult>();
+        }
+
+    private void InitContext()
         {
             var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()
                 .UseInMemoryDatabase("MyBeerCellar");

@@ -85,29 +85,21 @@ namespace MyBeerCellar.API.Controllers
         [HttpDelete("/api/[controller]/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             IActionResult result = null;
 
-            try
-            {
-                var item = await _context.CellarItems.FindAsync(id);
+            var item = await _context.CellarItems.FindAsync(id);
 
-                if (item != null)
-                {
-                    _context.CellarItems.Remove(item);
-                    await _context.SaveChangesAsync();
-                    result = NoContent();
-                }
-                else
-                {
-                    result = NotFound();
-                }
-            }
-            catch (Exception e)
+            if (item != null)
             {
-                result = BadRequest();
+                _context.CellarItems.Remove(item);
+                await _context.SaveChangesAsync();
+                result = NoContent();
+            }
+            else
+            {
+                result = NotFound();
             }
 
             return result;

@@ -60,7 +60,7 @@ stages:
       displayName: 'Run Unit Tests'
       inputs:
         command: 'test'
-        arguments: '--logger:trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)'
+        arguments: '--logger:trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)/coverage.cobertura.xml'
         testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
 
     - task: PublishCodeCoverageResults@1

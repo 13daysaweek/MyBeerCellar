@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using AutoMapper;
-using Azure.Core;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,17 +16,16 @@ using Xunit;
 
 namespace MyBeerCellar.API.UnitTests.Controllers
 {
-    public class BeerStyleControllerTests : BaseUnitTest
+    public class BeerStyleControllerTests : BaseContextUnitTest
     {
-        private MyBeerCellarContext _context;
+        //private MyBeerCellarContext Context;
         private readonly Mock<IMapper> _mockMapper;
         private readonly BeerStyleController _controller;
 
         public BeerStyleControllerTests()
         {
-            InitContext();
             _mockMapper = TestMockRepository.Create<IMapper>();
-            _controller = new BeerStyleController(_context,
+            _controller = new BeerStyleController(Context,
                 _mockMapper.Object);
         }
 
@@ -49,7 +47,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             IMapper mapper = null;
-            Action ctor = () => new BeerStyleController(_context,
+            Action ctor = () => new BeerStyleController(Context,
                 mapper);
 
             // Act + Assert
@@ -62,8 +60,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var styles = TestFixture.Create<IEnumerable<BeerStyle>>();
-            await _context.BeerStyles.AddRangeAsync(styles);
-            await _context.SaveChangesAsync();
+            await Context.BeerStyles.AddRangeAsync(styles);
+            await Context.SaveChangesAsync();
 
             // Act
             var actualStyles = await _controller.GetAsync();
@@ -81,8 +79,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var style = TestFixture.Create<BeerStyle>();
-            await _context.BeerStyles.AddAsync(style);
-            await _context.SaveChangesAsync();
+            await Context.BeerStyles.AddAsync(style);
+            await Context.SaveChangesAsync();
 
             // Act
             var actualStyle = await _controller.GetByIdAsync(style.StyleId);
@@ -141,7 +139,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
             result.Should()
                 .BeOfType<CreatedAtActionResult>();
 
-            var dbItem = await _context.BeerStyles.FindAsync(itemToCreate.StyleId);
+            var dbItem = await Context.BeerStyles.FindAsync(itemToCreate.StyleId);
 
             dbItem.Should()
                 .NotBeNull();
@@ -178,8 +176,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var style = TestFixture.Create<BeerStyle>();
-            await _context.BeerStyles.AddAsync(style);
-            await _context.SaveChangesAsync();
+            await Context.BeerStyles.AddAsync(style);
+            await Context.SaveChangesAsync();
 
             // Act
             var result = await _controller.DeleteAsync(style.StyleId);
@@ -191,7 +189,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
             result.Should()
                 .BeOfType<NoContentResult>();
 
-            var dbItem = await _context.BeerStyles.FindAsync(style.StyleId);
+            var dbItem = await Context.BeerStyles.FindAsync(style.StyleId);
 
             dbItem.Should()
                 .BeNull();
@@ -213,13 +211,84 @@ namespace MyBeerCellar.API.UnitTests.Controllers
             result.Should()
                 .BeOfType<NotFoundResult>();
         }
-
-    private void InitContext()
+        
+        [Fact]
+        public async Task PutAsync_Should_Update_Existing_Item()
         {
-            var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()
-                .UseInMemoryDatabase("MyBeerCellar");
+            // Arrange
+            var updateRequest = TestFixture.Create<UpdateBeerStyle>();
+            var itemToUpdate = TestFixture.Build<BeerStyle>()
+                .With(_ => _.StyleId, updateRequest.StyleId)
+                .Create();
 
-            _context = new MyBeerCellarContext(builder.Options);
+            await Context.BeerStyles.AddAsync(itemToUpdate);
+            await Context.SaveChangesAsync();
+
+            // Act
+            var result = await _controller.PutAsync(updateRequest);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<OkObjectResult>();
+
+            var returnedItem = ((result as OkObjectResult).Value as BeerStyle);
+
+            returnedItem.Should()
+                .NotBeNull();
+
+            returnedItem.StyleId
+                .Should()
+                .Be(updateRequest.StyleId);
+
+            returnedItem.StyleName
+                .Should()
+                .Be(updateRequest.StyleName);
+
+            var dbItem = await Context.BeerStyles.FindAsync(updateRequest.StyleId);
+
+            dbItem.Should()
+                .NotBeNull();
+
+            dbItem.StyleName
+                .Should()
+                .Be(updateRequest.StyleName);
+        }
+
+        [Fact]
+        public async Task PutAsync_Should_Return_NotFound_When_Style_Does_Not_Exist()
+        {
+            // Arrange
+            var updateRequest = TestFixture.Create<UpdateBeerStyle>();
+
+            // Act
+            var result = await _controller.PutAsync(updateRequest);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<NotFoundResult>();
+        }
+
+        [Fact]
+        public async Task PutAsync_Should_Return_BadRequest_On_Exception()
+        {
+            // Arrange
+            UpdateBeerStyle updateRequest = null;
+
+            // Act
+            var result = await _controller.PutAsync(updateRequest);
+
+            // Assert
+            result.Should()
+                .NotBeNull();
+
+            result.Should()
+                .BeOfType<BadRequestResult>();
         }
     }
 }

@@ -15,17 +15,15 @@ using Xunit;
 
 namespace MyBeerCellar.API.UnitTests.Controllers
 {
-    public class BeerContainerControllerTests : BaseUnitTest
+    public class BeerContainerControllerTests : BaseContextUnitTest
     {
-        private MyBeerCellarContext _context;
         private Mock<IMapper> _mockMapper;
         private BeerContainerController _controller;
 
         public BeerContainerControllerTests()
         {
-            InitContext();
             _mockMapper = TestMockRepository.Create<IMapper>();
-            _controller = new BeerContainerController(_context,
+            _controller = new BeerContainerController(Context,
                 _mockMapper.Object);
         }
 
@@ -47,7 +45,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             IMapper mapper = null;
-            Action ctor = () => new BeerStyleController(_context,
+            Action ctor = () => new BeerStyleController(Context,
                 mapper);
 
             // Act + Assert
@@ -60,8 +58,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var containers = TestFixture.Create<IEnumerable<BeerContainer>>();
-            _context.BeerContainers.AddRange(containers);
-            await _context.SaveChangesAsync();
+            Context.BeerContainers.AddRange(containers);
+            await Context.SaveChangesAsync();
 
             // Act
             var results = await _controller.GetAsync();
@@ -79,8 +77,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var existingContainer = TestFixture.Create<BeerContainer>();
-            await _context.BeerContainers.AddAsync(existingContainer);
-            await _context.SaveChangesAsync();
+            await Context.BeerContainers.AddAsync(existingContainer);
+            await Context.SaveChangesAsync();
 
             // Act
             var result = await _controller.Get(existingContainer.BeerContainerId);
@@ -140,7 +138,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
             result.Should()
                 .BeOfType<CreatedAtActionResult>();
 
-            var dbItem = await _context.BeerContainers.FirstOrDefaultAsync(_ => _.ContainerType == mappedContainer.ContainerType);
+            var dbItem = await Context.BeerContainers.FirstOrDefaultAsync(_ => _.ContainerType == mappedContainer.ContainerType);
             dbItem.Should()
                 .NotBeNull();
         }
@@ -172,8 +170,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
         {
             // Arrange
             var existingItem = TestFixture.Create<BeerContainer>();
-            await _context.BeerContainers.AddAsync(existingItem);
-            await _context.SaveChangesAsync();
+            await Context.BeerContainers.AddAsync(existingItem);
+            await Context.SaveChangesAsync();
 
             // Act
             var result = await _controller.DeleteAsync(existingItem.BeerContainerId);
@@ -185,7 +183,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
             result.Should()
                 .BeOfType<NoContentResult>();
 
-            var item = await _context.BeerContainers.FirstOrDefaultAsync(_ => _.BeerContainerId == existingItem.BeerContainerId);
+            var item = await Context.BeerContainers.FirstOrDefaultAsync(_ => _.BeerContainerId == existingItem.BeerContainerId);
 
             item.Should()
                 .BeNull();
@@ -217,8 +215,8 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .With(_ => _.BeerContainerId, existingItem.BeerContainerId)
                 .Create();
 
-            await _context.BeerContainers.AddAsync(existingItem);
-            await _context.SaveChangesAsync();
+            await Context.BeerContainers.AddAsync(existingItem);
+            await Context.SaveChangesAsync();
 
             // Act
             var result = await _controller.PutAsync(updateRequest);
@@ -237,7 +235,7 @@ namespace MyBeerCellar.API.UnitTests.Controllers
                 .Should()
                 .Be(updatedContainer.ContainerType);
 
-            var dbItem = await _context.BeerContainers.FindAsync(updateRequest.BeerContainerId);
+            var dbItem = await Context.BeerContainers.FindAsync(updateRequest.BeerContainerId);
             dbItem.ContainerType
                 .Should()
                 .Be(updatedContainer.ContainerType);
@@ -275,14 +273,6 @@ namespace MyBeerCellar.API.UnitTests.Controllers
 
             result.Should()
                 .BeOfType<BadRequestResult>();
-        }
-
-        private void InitContext()
-        {
-            var builder = new DbContextOptionsBuilder<MyBeerCellarContext>()
-                .UseInMemoryDatabase("MyBeerCellar");
-
-            _context = new MyBeerCellarContext(builder.Options);
         }
     }
 }

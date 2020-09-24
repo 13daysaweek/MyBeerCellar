@@ -107,18 +107,25 @@ namespace MyBeerCellar.API.Controllers
         {
             IActionResult result = null;
 
-            var style = await _context.BeerStyles.FindAsync(beerStyle.StyleId);
+            try
+            {
+                var style = await _context.BeerStyles.FindAsync(beerStyle.StyleId);
 
-            if (style != null)
-            {
-                style.StyleName = beerStyle.StyleName;
-                style.DateModified = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
-                result = Ok(style);
+                if (style != null)
+                {
+                    style.StyleName = beerStyle.StyleName;
+                    style.DateModified = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                    result = Ok(style);
+                }
+                else
+                {
+                    result = NotFound();
+                }
             }
-            else
+            catch (Exception e)
             {
-                result = NotFound();
+                result = BadRequest();
             }
 
             return result;

@@ -1,0 +1,169 @@
+# super useless change
+trigger: none
+
+resources:
+  pipelines:
+  - pipeline: build   # Name of the pipeline resource
+    source: 'MyBeerCellar.API - Build' # Name of the pipeline referenced by the pipeline resource
+
+variables:
+  skipComponentGovernanceDetection: true
+  pool: 'windows-latest'
+  azure-sub-dev: 'AIRS'
+  azure-sub-prod: 'MSDN'
+  location: 'eastus'
+  infrastructure-arm-template: '$(Pipeline.Workspace)/build/Infrastructure/mybeercellar-api.json'
+
+stages:
+ - stage: Development
+   displayName: 'Dev Release Stage'
+   variables:
+   - group: 'Development Variables'
+   - name: 'resource-group'
+     value: 'mybeercellar'
+   - name: 'appName'
+     value: 'mybeercellar-api-dev'
+   - name: 'keyVaultName'
+     value: 'mybrewcellar-vault-dev'
+   - name: 'environmentSuffix'
+     value: 'dev'
+   jobs:
+   - deployment: 'Deploy'
+     environment: 'Development'
+     pool:
+       vmImage: $(pool)
+     strategy:
+      runOnce:
+        deploy:
+         steps:
+           - task: AzureResourceGroupDeployment@2
+             displayName: 'Deploy Infrastructure'
+             inputs:
+                azureSubscription: $(azure-sub-dev)
+                csmFile: $(infrastructure-arm-template)
+                resourceGroupName: $(resource-group)
+                location: $(location)
+                overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+                deploymentOutputs: 'armOutput'
+
+           - task: AzureCLI@2
+             displayName: 'Set App Config connection string on API app'
+             inputs:
+               azureSubscription: 'AIRS'
+               scriptType: 'bash'
+               scriptLocation: 'inlineScript'
+               inlineScript: |
+                 connectionString=$(az appconfig credential list -n mybeercellar-config-dev -g mybeercellar --query [0].connectionString -o tsv)
+                 az webapp config connection-string set -g mybeercellar -n mybeercellar-api-dev -t custom --settings AppConfig=$connectionString
+
+           - task: SqlAzureDacpacDeployment@1
+             displayName: 'Apply database migration script'
+             inputs:
+               azureSubscription: 'AIRS'
+               AuthenticationType: 'server'
+               ServerName: '$(migrationSqlServerName)'
+               DatabaseName: '$(migrationSqlDatabaseName)'
+               SqlUsername: '$(migrationSqlLogin)'
+               SqlPassword: '$(migrationSqlPassword)'
+               deployType: 'SqlTask'
+               SqlFile: '$(Pipeline.Workspace)/build/Migrations/migration_script.sql'
+               IpDetectionMethod: 'AutoDetect'
+
+           - task: AzureRmWebAppDeployment@4
+             displayName: 'Deploy API code'
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'AIRS'
+               appType: 'webAppLinux'
+               WebAppName: 'mybeercellar-api-dev'
+               packageForLinux: $(Pipeline.Workspace)/build/Code/*.zip
+               RuntimeStack: 'DOTNETCORE|3.1'
+               StartupCommand: 'dotnet MyBeerCellar.API.dll'
+
+           - task: AzureCLI@2
+             displayName: 'Add App Config entries'
+             inputs:
+              azureSubscription: 'AIRS'
+              scriptType: bash
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az extension add -n application-insights
+                instrumentationKey=$(az monitor app-insights component show -o tsv -a mybeercellar-api-dev-insights -g mybeercellar --query instrumentationKey)
+                az appconfig kv set -n mybeercellar-config-dev --key ApplicationInsights:InstrumentationKey --value $instrumentationKey --yes
+
+ - stage: Production
+   displayName: 'Production Release Stage'
+   variables:
+   - group: 'Production Variables'
+   - name: 'resource-group'
+     value: 'my-beer-cellar-prod'
+   - name: 'appName'
+     value: 'mybrewcellar-api-prod'
+   - name: 'keyVaultName'
+     value: 'mybrewcellar-vault-prod'
+   - name: 'environmentSuffix'
+     value: 'prod'     
+   jobs:
+   - deployment: 'Deploy'
+     environment: 'Production'
+     pool:
+       vmImage: $(pool)
+     strategy:
+      runOnce:
+        deploy:
+          steps:
+           - task: AzureResourceGroupDeployment@2
+             displayName: 'Deploy Infrastructure'
+             inputs:
+               azureSubscription: $(azure-sub-prod)
+               csmFile: $(infrastructure-arm-template)
+               resourceGroupName: $(resource-group)
+               location: $(location)
+               overrideParameters: '-webAppName $(appName) -tenantId $(tenantId) -keyVaultName $(keyVaultName) -tenantId $(tenantId) -ownerObjectId $(ownerObjectId) -sqlAdminLogin $(sqlAdminLogin) -sqlAdminPassword $(sqlAdminPassword) -environmentSuffix $(environmentSuffix)'
+               deploymentOutputs: 'armOutput'               
+
+           - task: AzureCLI@2
+             displayName: 'Set App Config connection string on API app'
+             inputs:
+               azureSubscription: 'MSDN'
+               scriptType: 'bash'
+               scriptLocation: 'inlineScript'
+               inlineScript: |
+                 connectionString=$(az appconfig credential list -n mybeercellar-config-prod -g my-beer-cellar-prod --query [0].connectionString -o tsv)
+                 az webapp config connection-string set -g my-beer-cellar-prod -n mybrewcellar-api-prod -t custom --settings AppConfig=$connectionString
+
+           - task: SqlAzureDacpacDeployment@1
+             displayName: 'Apply database migration script'
+             inputs:
+               azureSubscription: 'MSDN'
+               AuthenticationType: 'server'
+               ServerName: '$(migrationSqlServerName)'
+               DatabaseName: '$(migrationSqlDatabaseName)'
+               SqlUsername: '$(migrationSqlLogin)'
+               SqlPassword: '$(migrationSqlPassword)'
+               deployType: 'SqlTask'
+               SqlFile: '$(Pipeline.Workspace)/build/Migrations/migration_script.sql'
+               IpDetectionMethod: 'AutoDetect'
+
+           - task: AzureRmWebAppDeployment@4
+             displayName: 'Deploy API code'
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'MSDN'
+               appType: 'webAppLinux'
+               WebAppName: 'mybrewcellar-api-prod'
+               packageForLinux: '$(Pipeline.Workspace)/build/Code/*.zip'
+               RuntimeStack: 'DOTNETCORE|3.1'
+               StartupCommand: 'dotnet MyBeerCellar.API.dll'
+               TakeAppOfflineFlag: true
+
+           - task: AzureCLI@2
+             displayName: 'Add App Config entries'
+             inputs:
+              azureSubscription: 'MSDN'
+              scriptType: bash
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az extension add -n application-insights
+                instrumentationKey=$(az monitor app-insights component show -o tsv -a mybrewcellar-api-prod-insights -g my-beer-cellar-prod --query instrumentationKey)
+                az appconfig kv set -n mybeercellar-config-prod --key ApplicationInsights:InstrumentationKey --value $instrumentationKey --yes

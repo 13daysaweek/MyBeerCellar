@@ -1,0 +1,114 @@
+trigger:
+- master
+
+variables:
+  buildConfiguration: 'Release'
+  skipComponentGovernanceDetection: true
+  pool: 'ubuntu-latest'
+  artifact: 'mybeercellar-api'
+  location: 'eastus'
+  resourceGroup: 'mybeercellar'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  variables:
+  - group: 'Development Variables'
+  jobs:
+  - job: BuildInfrastructure
+    displayName: Build Infrastructure
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Bash@3
+      displayName: 'Install Bicep tooling'
+      inputs:
+        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/install.sh'
+
+    - task: Bash@3
+      displayName: 'Build ARM template from Bicep'
+      inputs:
+        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/'
+        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates to archive directory'
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)/infrastructure'
+        Contents: '**/*.json'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish infrastructure artifact'
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)/infrastructure/
+        ArtifactName: 'Infrastructure'
+        publishLocation: Container
+  
+  - job: BuildCode
+    displayName: 'Build API Code'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: build
+        projects: '**/*.csproj'
+        arguments: '-- configuration Release'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run Unit Tests'
+      inputs:
+        command: 'test'
+        arguments: '--logger:trx --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)/coverage.cobertura.xml'
+        testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+      
+    - task: DotNetCoreCLI@2
+      displayName: 'Publish'
+      inputs:
+        command: publish
+        publishWebProjects: true
+        zipAfterPublish: true
+        projects: '**/*.csproj'
+        arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/code/'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish code artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/code/'
+        ArtifactName: 'Code'
+        publishLocation: Container
+
+  - job: CreateDataMigrationScript
+    displayName: 'Export data migration script'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: Bash@3
+        displayName: 'Install EF tooling'
+        inputs:
+          targetType: inline
+          script: |
+            dotnet tool install --tool-path ~/eftools/ dotnet-ef
+
+      - task: Bash@3
+        displayName: 'Export data migration script'
+        inputs:
+          targetType: inline
+          workingDirectory: '$(System.DefaultWorkingDirectory)/MyBeerCellar.API'
+          script: |
+            export MIGRATION_CONNECTION_STRING=$(migrationConnectionString)
+            ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql
+      
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish migration script'
+        inputs:
+         PathtoPublish: '$(Build.ArtifactStagingDirectory)/migrations/'
+         ArtifactName: 'Migrations'
+         publishLocation: Container

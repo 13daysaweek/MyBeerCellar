@@ -1,5 +1,10 @@
 trigger:
-- main
+  branches:
+    include:
+    - main
+  pathes:
+    include:
+    - API/*
 
 variables:
   buildConfiguration: 'Release'
@@ -76,7 +81,7 @@ stages:
         command: publish
         publishWebProjects: true
         zipAfterPublish: true
-        projects: '**/*.csproj'
+        projects: '$(System.DefaultWorkingDirectory)/API/**/*.csproj'
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/code/'
     
     - task: PublishBuildArtifacts@1

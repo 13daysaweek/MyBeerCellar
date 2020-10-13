@@ -4,7 +4,7 @@ trigger: none
 resources:
   pipelines:
   - pipeline: build   # Name of the pipeline resource
-    source: 'MyBeerCellar.API - Build' # Name of the pipeline referenced by the pipeline resource
+    source: 'MyBeerCellar - API - Build' # Name of the pipeline referenced by the pipeline resource
 
 variables:
   skipComponentGovernanceDetection: true

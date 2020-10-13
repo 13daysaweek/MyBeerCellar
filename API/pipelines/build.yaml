@@ -62,6 +62,7 @@ stages:
         command: 'test'
         arguments: '--logger:trx --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)/coverage.cobertura.xml'
         testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
+        projects: '$(System.DefaultWorkingDirectory)/API/**/*UnitTests.csproj'
 
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage report'

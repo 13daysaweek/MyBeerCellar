@@ -60,6 +60,7 @@ stages:
         command: build
         projects: '$(System.DefaultWorkingDirectory)/API/**/*.csproj'
         arguments: '-- configuration Release'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/API/'
 
     - task: DotNetCoreCLI@2
       displayName: 'Run Unit Tests'
@@ -68,6 +69,7 @@ stages:
         arguments: '--logger:trx --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[*]MyBeerCellar.API.Migrations*" /p:CoverletOutput=$(Agent.TempDirectory)/coverage.cobertura.xml'
         testRunTitle: 'Unit Tests for Build $(Build.BuildId)'
         projects: '$(System.DefaultWorkingDirectory)/API/**/*UnitTests.csproj'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/API/'
 
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage report'
@@ -83,6 +85,7 @@ stages:
         zipAfterPublish: true
         projects: '$(System.DefaultWorkingDirectory)/API/**/*.csproj'
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/code/'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/API/'
     
     - task: PublishBuildArtifacts@1
       displayName: 'Publish code artifact'

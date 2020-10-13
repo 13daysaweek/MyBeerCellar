@@ -79,7 +79,6 @@ stages:
       displayName: 'Publish'
       inputs:
         command: publish
-        publishWebProjects: true
         zipAfterPublish: true
         projects: '$(System.DefaultWorkingDirectory)/API/MyBeerCellar.API/MyBeerCellar.API.csproj'
         arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)/code/'

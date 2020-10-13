@@ -23,17 +23,17 @@ stages:
     - task: Bash@3
       displayName: 'Install Bicep tooling'
       inputs:
-        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/install.sh'
+        filePath: '$(System.DefaultWorkingDirectory)/API/infrastructure/install.sh'
 
     - task: Bash@3
       displayName: 'Build ARM template from Bicep'
       inputs:
-        workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/'
-        filePath: '$(System.DefaultWorkingDirectory)/infrastructure/build.sh'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/API/infrastructure/'
+        filePath: '$(System.DefaultWorkingDirectory)/API/infrastructure/build.sh'
     - task: CopyFiles@2
       displayName: 'Copy ARM templates to archive directory'
       inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/infrastructure'
+        SourceFolder: '$(System.DefaultWorkingDirectory)/API/infrastructure'
         Contents: '**/*.json'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/infrastructure/'
 
@@ -53,7 +53,7 @@ stages:
       displayName: 'Build'
       inputs:
         command: build
-        projects: '**/*.csproj'
+        projects: '$(System.DefaultWorkingDirectory)/API/**/*.csproj'
         arguments: '-- configuration Release'
 
     - task: DotNetCoreCLI@2
@@ -101,7 +101,7 @@ stages:
         displayName: 'Export data migration script'
         inputs:
           targetType: inline
-          workingDirectory: '$(System.DefaultWorkingDirectory)/MyBeerCellar.API'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/API/MyBeerCellar.API'
           script: |
             export MIGRATION_CONNECTION_STRING=$(migrationConnectionString)
             ~/eftools/dotnet-ef migrations script --idempotent --output $(Build.ArtifactStagingDirectory)/migrations/migration_script.sql

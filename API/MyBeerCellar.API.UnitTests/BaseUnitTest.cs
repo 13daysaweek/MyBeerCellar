@@ -3,6 +3,10 @@ using Moq;
 
 namespace MyBeerCellar.API.UnitTests
 {
+    /// <summary>
+    /// Base class for unit tests, provides a MockRepository and a Fixture for use in
+    /// unit tests
+    /// </summary>
     public abstract class BaseUnitTest
     {
         protected BaseUnitTest()

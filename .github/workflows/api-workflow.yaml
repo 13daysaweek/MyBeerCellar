@@ -7,8 +7,9 @@ name: CI
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'API/**'
+    # Gonna comment this out for a while 
+    # paths:
+    #   - 'API/**'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

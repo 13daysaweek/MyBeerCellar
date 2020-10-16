@@ -31,6 +31,10 @@ namespace MyBeerCellar.API
                 })
                 .UseStartup<Startup>());
 
+        /// <summary>
+        /// Might not actually need this?
+        /// </summary>
+        /// <param name="args"></param>
         private static void RunMigration(string[] args)
         {
             if (args.Any(_ => _.ToLower().StartsWith(Constants.MigrationUtility.ConnectionStringArg)))
